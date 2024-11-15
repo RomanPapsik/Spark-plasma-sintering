@@ -1,0 +1,45 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! ALUMINA (Al2O3)
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,Al2O3,5
+
+! Heat capacity joule/(kilogram*kelvin)
+! MP,C,Al2O3,34.27,2.72,-0.00096 ! Enweani
+! MP,C,Al2O3,310.5,1.7 ! Antou
+MP,C,Al2O3,0 ! Furukawa 1956
+*DO,index,1,100
+	T = 270+(index-1)*30
+	cp = 1.45717E3
+	cp = cp - 2.00177E5/T
+	cp = cp - 3.35532E-2*T
+	MPDATA,C,Al2O3,index,cp
+*ENDDO
+
+! Thermal conductivity (watt/(meter*kelvin))
+MP,KXX,Al2O3,0 
+*DO,index,1,100
+	T = 270+(index-1)*30
+	lambda = 39500*T**(-1.26)
+	MPDATA,KXX,Al2O3,index,lambda
+*ENDDO
+
+! Electrical resistivity (ohm*meter)
+MP,RSVX,Al2O3,0
+*DO,index,1,100
+	T = 270+(index-1)*30
+	re = 8.7E19*T**(-4.82)
+	MPDATA,RSVX,Al2O3,index,re
+*ENDDO
+
+! Density kilogram/(meter**3)
+MP,DENS,Al2O3,3899

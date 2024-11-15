@@ -1,0 +1,36 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! SILICON CARBIDE (SiC)
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,SiC,7
+
+! Heat capacity joule/(kilogram*kelvin)
+MP,C,SiC,670
+
+! Thermal conductivity (watt/(meter*kelvin))
+MP,KXX ,SiC,0
+*DO,index,1,100
+	T = 270+(index-1)*30
+	lambda = 411*exp(-0.0025*T)
+	MPDATA,KXX,SiC,index,lambda
+*ENDDO
+
+! Electrical resistivity (ohm*meter)
+MP,RSVX,SiC,0
+*DO,index,1,100
+	T = 270+(index-1)*30
+	re = 4.5*exp(-0.0027*T)
+	MPDATA,RSVX,SiC,index,re
+*ENDDO
+
+! Density kilogram/(meter**3)
+MP,DENS,SiC,3200

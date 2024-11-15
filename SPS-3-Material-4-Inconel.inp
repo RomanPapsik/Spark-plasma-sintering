@@ -1,0 +1,29 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! INCONEL
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,inconel,4
+
+! Heat capacity joule/(kilogram*kelvin)
+MP,C,inconel,344,0.25
+
+! Thermal conductivity watt/(meter*kelvin)
+MP,KXX,inconel,10.09,0.0157
+
+! Electrical resistivity ohm*meter
+MP,RSVX,inconel,9.82E-7,1.6E-10
+
+! Density kilogram/(meter**3)
+MP,DENS,inconel,8430
+
+! Emisivity
+MP,EMIS,inconel,0.67

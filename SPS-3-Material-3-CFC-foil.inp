@@ -1,0 +1,38 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! CFC FOIL
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,cfc_foil,3
+
+! Heat capacity joule/(kilogram*kelvin)
+MP,C,cfc_foil,2.26975E3
+*DO,index,1,100
+	T=270+(index-1)*30
+	cp=2.26975E3
+	cp=cp-6.01593E12/T**4
+	cp=cp+6.66995E10/T**3
+	cp=cp-1.81914E8/T**2
+	cp=cp-3.77953E5/T
+	cp=cp-1.016E-2*T
+	MPDATA,C,cfc_foil,index,cp
+*ENDDO
+
+! Thermal conductivity watt/(meter*kelvin)
+MP,KXX,cfc_foil,25 ! In-plane radial
+MP,KYY,cfc_foil,5  ! Out-of-plane axial
+MP,KZZ,cfc_foil,25 ! In-plane tangential
+
+! Electrical resistivity ohm*meter
+MP,RSVX,cfc_foil,25E-6
+
+! Density kilogram/(meter**3)
+MP,DENS,cfc_foil,1500

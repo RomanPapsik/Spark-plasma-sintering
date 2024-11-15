@@ -1,0 +1,42 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! TITANIUM CARBIDE (TiC)
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,TiC,6
+
+! Heat capacity joule/(kilogram*kelvin)
+MP,C,TiC,803,5.744E-2,-5.427E-5
+*DO,index,1,100
+	T = 270+(index-1)*30
+	cp = 803+5.744E-2*T-5.427E-5*T**2-23.685E6/T**2
+	MPDATA,C,TiC,index,cp
+*ENDDO
+
+! Thermal conductivity watt/(meter*kelvin)
+MP,KXX,TiC,23.994,9.8E-3
+
+! Electrical resistivity ohm*meter
+MP,RSVX,TiC,110.423
+*DO,index,1,100
+	T = 270+(index-1)*30
+	re = 110.423
+	re = re - 1.65977e6/T**2
+	re = re + 17006.8/T
+	re = re + 0.319796*T
+	re = re - 0.0000894576*T**2
+	re = re + 1.08806e-8*T**3
+	re = 1/re
+	MPDATA,RSVX,TiC,index,re
+*ENDDO
+
+! Density kilogram/(meter**3)
+MP,DENS,TiC,4930

@@ -1,0 +1,36 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! GRAPHITE FOIL
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,graphite_foil,2
+
+! Heat capacity joule/(kilogram*kelvin)
+MP,C,graphite_foil,2.26975E3
+*DO,index,1,100
+	T=270+(index-1)*30
+	cp=2.26975E3
+	cp=cp-6.01593E12/T**4
+	cp=cp+6.66995E10/T**3
+	cp=cp-1.81914E8/T**2
+	cp=cp-3.77953E5/T
+	cp=cp-1.016E-2*T
+	MPDATA,C,graphite_foil,index,cp
+*ENDDO
+
+! Thermal conductivity watt/(meter*kelvin)
+MP,KXX,graphite_foil,123,-0.0699,0.0000155
+
+! Electrical resistivity ohm*meter
+MP,RSVX,graphite_foil,2.23E-4
+
+! Density kilogram/(meter**3)
+MP,DENS,graphite_foil,1904,-0.0141

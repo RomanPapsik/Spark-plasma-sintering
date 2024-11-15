@@ -1,0 +1,26 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! TITANIUM ALUMINIDE (TiAl)
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,TiAl,8
+
+! Heat capacity joule/(kilogram*kelvin)
+MP,C,TiAl,583,0.094
+
+! Thermal conductivity (watt/(meter*kelvin))
+MP,KXX ,TiAl,9.47,1.19E-2
+
+! Electrical resistivity (ohm*meter)
+MP,RSVX,TiAl,4.06E-7,6.45E-10
+
+! Density kilogram/(meter**3)
+MP,DENS,TiAl,3900
