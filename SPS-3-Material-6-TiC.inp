@@ -17,7 +17,11 @@ MPTGEN,1,100,270,30
 MP,C,TiC,803,5.744E-2,-5.427E-5
 *DO,index,1,100
 	T = 270+(index-1)*30
-	cp = 803+5.744E-2*T-5.427E-5*T**2-23.685E6/T**2
+	*IF,T,LT,1073,THEN
+		cp = 803+5.744E-2*T-5.427E-5*T**2-23.685E6/T**2
+	*ELSE
+		cp = 781.6
+	*ENDIF
 	MPDATA,C,TiC,index,cp
 *ENDDO
 
