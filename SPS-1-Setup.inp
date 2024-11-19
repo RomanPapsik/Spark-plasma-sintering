@@ -1,0 +1,52 @@
+FINISH
+/CLEAR
+
+! Boolean data types
+true = 1
+false = 0
+
+! Define the number pi
+PI = 3.141592653589793
+
+! Meshing methods
+mapped_mesh = 1
+free_mesh = 0
+
+! Meshing methods
+tetrahedral_mesh = 1
+hexahedral_mesh = 0
+
+!-------------------------------------------------------------------------------
+! VISUALISATION
+!-------------------------------------------------------------------------------
+
+/TRIAD,OFF
+/PLOPTS,MINM,OFF
+/PLOPTS,DATE,OFF
+
+!-------------------------------------------------------------------------------
+! UNITS
+!-------------------------------------------------------------------------------
+
+second = 1
+meter = 1
+kilogram = 1
+ampere = 1
+kelvin = 1
+
+millisecond = second/1000
+minute = second*60
+millimeter = meter/1000
+joule = kilogram*meter**2/second**2
+watt = joule/second
+volt = watt/ampere
+ohm = volt/ampere
+
+!-------------------------------------------------------------------------------
+! SHORTCUTS
+!-------------------------------------------------------------------------------
+
+*ABBR,POWRGRPH
+
+*ABBR,RESTART,/INPUT,SPS-0,inp
+! *ABBR,IMAGE,/INPUT,SPS-1-Image,inp
