@@ -1,0 +1,67 @@
+!-------------------------------------------------------------------------------
+! SOLUTION OF PROBLEM
+!-------------------------------------------------------------------------------
+
+/SOLU
+
+! Select everything
+ALLSEL,ALL
+! Number of nodes
+*GET,nodes_count,NODE,,COUNT
+! Number of elements
+*GET,elements_count,ELEM,,COUNT
+
+*IF,analysis_type,EQ,steady_state,THEN
+	! Steady-state analysis
+	ANTYPE,STATIC,NEW
+*ELSEIF,analysis_type,EQ,transient,THEN
+	! Transient analysis
+	ANTYPE,TRANS,NEW
+*ENDIF
+
+! Sparse solver
+EQSLV,SPAR
+DSPOPTION,,INCORE
+
+! Timing
+*IF,analysis_type,EQ,steady_state,THEN
+
+	*IF,load_type,EQ,constant_voltage,THEN
+		*SET,end_time_thermal,voltage_RMS
+	*ELSEIF,load_type,EQ,constant_current,THEN
+		*SET,end_time_thermal,current_RMS
+	*ENDIF
+
+	*SET,time_step_initial,end_time_thermal/100
+	*SET,time_step_minimal,end_time_thermal/100
+	*SET,time_step_maximal,end_time_thermal/10
+
+*ENDIF
+
+*IF,analysis_type,EQ,transient,THEN
+
+	! Time stepping
+	*SET,time_step_initial,10*second
+	*SET,time_step_minimal,1*second
+	*SET,time_step_maximal,100*second
+	*SET,end_time_thermal,2700*second
+
+	! Stepped boundary condition
+	KBC,1
+*ENDIF
+
+! Time steps
+TIME,end_time_thermal
+DELTIM,time_step_initial,time_step_minimal,time_step_maximal,ON
+AUTOTS,TRUE
+! Save all nodal data for every substep
+OUTRES,ALL,ALL
+! No non-linear effects
+NLGEOM,OFF
+! Full Newton-Raphson procedure
+NROPT,FULL
+
+! Solve
+/UIS,MSGPOP,3
+SOLVE
+/UIS,MSGPOP,0
