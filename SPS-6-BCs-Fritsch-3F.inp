@@ -1,0 +1,124 @@
+/PREP7
+
+!-------------------------------------------------------------------------------
+! CONVECTIVE COOLING
+!-------------------------------------------------------------------------------
+
+! Water temperature
+water_temperature = 300*kelvin
+
+! Heat convection coefficient
+heat_convection_coefficient = 880*watt/(kelvin*meter**2)
+
+! Convection to water
+CMSEL,S,surface_water,NODE
+SF,ALL,CONV,heat_convection_coefficient,water_temperature
+NSEL,ALL
+
+!-------------------------------------------------------------------------------
+! RADIATION
+!-------------------------------------------------------------------------------
+
+! Surface elements for radiation
+surface_element = 151
+ET,surface_element,SURF151
+! Element behavior
+KEYOPT,surface_element,3,1 ! Axisymmetric
+! Extra node
+KEYOPT,surface_element,5,1 ! Has extra node
+! Radiation
+KEYOPT,surface_element,9,1 ! Use radiation with the form factor real constant
+! Stafan-Bolzman constant
+Stefan_Boltzmann = 5.670374419E-8
+! Form factor
+R,surface_element,1,Stefan_Boltzmann
+
+! Distant node for radiation
+N,,chamber_width/2,0,0
+distant_node = node(chamber_width/2,0,0)
+
+! BCs for distant node
+D,distant_node,TEMP,water_temperature
+TUNIF,water_temperature
+
+! Create radiation elements
+NSEL,S,NODE,,distant_node
+CMSEL,A,surface_radiation,NODE
+TYPE,surface_element
+REAL,surface_element
+ESURF,distant_node
+
+!-------------------------------------------------------------------------------
+! GROUND
+!-------------------------------------------------------------------------------
+
+ground = 0*volt
+
+CMSEL,S,surface_ground,NODE
+D,ALL,VOLT,ground
+NSEL,ALL
+
+!-------------------------------------------------------------------------------
+! CONSTANT ELECTRIC POTENTIAL
+!-------------------------------------------------------------------------------
+
+! Steady state analysis and constant voltage
+*IF,load_type,EQ,constant_voltage,THEN
+
+! Voltage
+voltage_RMS = 4.0*volt
+
+CMSEL,S,surface_load,NODE
+D,ALL,VOLT,voltage_RMS
+NSEL,ALL
+
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! CONSTANT CURRENT
+!-------------------------------------------------------------------------------
+
+! Steady state analysis and constant current
+*IF,load_type,EQ,constant_current,THEN
+
+! Current
+current_RMS = 70.0*ampere
+retainer_electrode_area = PI/4*(retainer_electrode_diameter**2-retainer_electrode_bore**2)
+current_density = current_RMS / retainer_electrode_area
+
+! Current at one node
+CMSEL,S,surface_load,NODE
+NSEL,R,LOC,X,retainer_electrode_diameter/2,retainer_electrode_diameter/2
+F,ALL,AMPS,current_RMS
+NSEL,ALL
+
+! Coupling of voltage
+CMSEL,S,surface_load,NODE
+CP,NEXT,VOLT,ALL
+
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! VARIABLE ELECTRIC POTENTIAL
+!-------------------------------------------------------------------------------
+
+! Steady state analysis (probe various constant voltages)
+*IF,load_type,EQ,variable_voltage,THEN
+
+! Time varying voltage
+time_end = 2700*second
+time_step = 1*second
+steps_count = time_end/time_step + 1
+
+*DIM,voltage,TABLE,steps_count,,,time
+*DO,step,1,steps_count,+1
+voltage(step,0) = (step-1)*time_step
+voltage(step,1) = 5.1*(1-exp(-0.0016345*(step-1)*time_step))
+*ENDDO
+*VPLOT,voltage(1,0),voltage(1,1)
+
+CMSEL,S,surface_load,NODE
+D,ALL,VOLT,%voltage%
+NSEL,ALL
+
+*ENDIF

@@ -1,0 +1,90 @@
+/PREP7
+
+!-------------------------------------------------------------------------------
+! INTERIOR DISCRETIZATION
+!-------------------------------------------------------------------------------
+
+! 2D quadratic element
+thermoelectric_element = 222
+ET,thermoelectric_element,PLANE222
+! Axisymmetric formulation
+KEYOPT,thermoelectric_element,3,1
+! Thermoelectric formulation
+KEYOPT,thermoelectric_element,1,110
+
+! Sizing
+element_size = 1*millimeter
+LSEL,ALL
+LESIZE,ALL,element_size,,,,1
+
+! Meshing
+TYPE,thermoelectric_element
+MSHAPE,hexahedral_mesh,2D
+MSHKEY,mapped_mesh
+AMESH,ALL
+
+! Merge everything
+NUMMRG,ALL,0.001*micrometer
+
+! Numbering
+/PNUM,MAT,1
+/NUMBER,1
+
+! Symmetry expansion
+/EXPAND,1,RECT,HALF,1E-12
+EPLOT
+
+!-------------------------------------------------------------------------------
+! COMPONENTS
+!-------------------------------------------------------------------------------
+
+! Water-cooled surface
+KSEL,S,LOC,Y,-height_11,-height_11
+KSEL,A,LOC,Y,+height_11,+height_11
+KSEL,R,LOC,X,radius_5,radius_8
+KSEL,A,LOC,Y,-height_7,-height_7
+KSEL,A,LOC,Y,+height_7,+height_7
+LSLK,S,1
+NSLL,S,1
+CM,surface_water,NODE
+ALLSEL,ALL
+
+! Surface for vacuum convection
+KSEL,S,LOC,X,radius_8,radius_8
+KSEL,A,LOC,Y,-height_9,height_9
+KSEL,R,LOC,X,radius_7,radius_8
+KSEL,A,LOC,Y,-height_3,height_3
+KSEL,R,LOC,X,radius_6,radius_8
+LSLK,S,1
+NSLL,S,1
+CM,surface_vacuum,NODE
+ALLSEL,ALL
+
+! Surface for radiation
+KSEL,S,LOC,X,radius_6,radius_6
+KSEL,R,LOC,Y,-height_3,height_3
+LSLK,S,1
+KSEL,S,LOC,X,radius_7,radius_7
+KSEL,R,LOC,Y,-height_9,height_9
+LSLK,A,1
+KSEL,S,LOC,X,radius_8,radius_8
+LSLK,A,1
+NSLL,S,1
+CM,surface_radiation,NODE
+ALLSEL,ALL
+
+! Ground side
+KSEL,S,LOC,X,retainer_electrode_bore/2,retainer_electrode_diameter/2
+KSEL,R,LOC,Y,-height_11,-height_11
+LSLK,S,1
+NSLL,S,1
+CM,surface_ground,NODE
+ALLSEL,ALL
+
+! Load side
+KSEL,S,LOC,X,retainer_electrode_bore/2,retainer_electrode_diameter/2
+KSEL,R,LOC,Y,+height_11,+height_11
+LSLK,S,1
+NSLL,S,1
+CM,surface_load,NODE
+ALLSEL,ALL

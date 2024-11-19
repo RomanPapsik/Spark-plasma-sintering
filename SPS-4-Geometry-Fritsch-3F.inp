@@ -1,0 +1,153 @@
+/PREP7
+
+!-------------------------------------------------------------------------------
+! DIMENSIONS OF SOLIDS
+!-------------------------------------------------------------------------------
+
+specimen_height = 3*millimeter
+specimen_diameter = 20*millimeter
+
+graphite_paper_thickness = 0.25*millimeter
+cfc_foil_thickness = 0.2*millimeter
+
+die_height = 60*millimeter
+die_bore = 20*millimeter
+die_diameter = 60*millimeter ! 25 cm2 cross-section
+
+electrode_height = 70*millimeter
+electrode_bore = 44*millimeter
+electrode_diameter = 100*millimeter ! 63 cm2 cross-section
+
+punch_inner_height = 37*millimeter
+punch_inner_diameter = 20*millimeter ! 19.5 really
+
+punch_outer_height = 65*millimeter
+punch_outer_diameter = 30*millimeter
+
+retainer_electrode_height = 25*millimeter
+retainer_electrode_depth = 15*millimeter
+retainer_electrode_bore = 44*millimeter
+retainer_electrode_diameter = 110*millimeter
+
+retainer_punch_height = 25*millimeter
+retainer_punch_depth = 15*millimeter
+retainer_punch_bore = 30*millimeter
+retainer_punch_diameter = 40*millimeter
+
+chamber_height = 250*millimeter
+chamber_width = 280*millimeter
+
+!-------------------------------------------------------------------------------
+! POSITIONS
+!-------------------------------------------------------------------------------
+
+radius_0 = 0
+radius_1 = specimen_diameter/2
+radius_2 = specimen_diameter/2 + graphite_paper_thickness
+radius_3 = punch_outer_diameter/2
+radius_4 = retainer_punch_diameter/2
+radius_5 = electrode_bore/2
+radius_6 = die_diameter/2
+radius_7 = electrode_diameter/2
+radius_8 = retainer_electrode_diameter/2
+
+height_0 = 0
+height_1 = specimen_height/2
+height_2 = specimen_height/2 + graphite_paper_thickness
+height_3 = die_height/2
+height_4 = specimen_height/2 + graphite_paper_thickness + punch_inner_height
+height_5 = height_4 + punch_outer_height - retainer_punch_depth
+height_6 = height_4 + punch_outer_height
+height_7 = height_5 + retainer_punch_height
+height_8 = die_height/2 + electrode_height
+height_9 = height_8 + cfc_foil_thickness - retainer_electrode_depth
+height_10 = height_8 + cfc_foil_thickness
+height_11 = height_9 + retainer_electrode_height
+
+height_load = height_11
+
+!-------------------------------------------------------------------------------
+! AREAS
+!-------------------------------------------------------------------------------
+
+! Specimen
+ASEL,NONE
+RECTNG,radius_0,radius_1,height_0,height_1
+ARSYM,Y,ALL,,,,1,0
+AATT,material_specimen
+
+! Graphite foild between specimen, dies and punches
+ASEL,NONE
+RECTNG,radius_0,radius_1,height_1,height_2
+RECTNG,radius_1,radius_2,height_0,height_1
+RECTNG,radius_1,radius_2,height_1,height_2
+RECTNG,radius_1,radius_2,height_2,height_3
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite_foil
+
+! Die
+ASEL,NONE
+RECTNG,radius_2,radius_5,height_0,height_1
+RECTNG,radius_2,radius_5,height_1,height_2
+RECTNG,radius_2,radius_5,height_2,height_3
+RECTNG,radius_5,radius_6,height_0,height_1
+RECTNG,radius_5,radius_6,height_1,height_2
+RECTNG,radius_5,radius_6,height_2,height_3
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite
+
+! Inner punch
+ASEL,NONE
+RECTNG,radius_0,radius_1,height_2,height_3
+RECTNG,radius_0,radius_1,height_3,height_4
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite
+
+! Outer punch
+ASEL,NONE
+RECTNG,radius_0,radius_1,height_4,height_5
+RECTNG,radius_0,radius_1,height_5,height_6
+RECTNG,radius_1,radius_3,height_4,height_5
+RECTNG,radius_1,radius_3,height_5,height_6
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite
+
+! Electrode
+ASEL,NONE
+RECTNG,radius_5,radius_6,height_3,height_9
+RECTNG,radius_5,radius_6,height_9,height_8
+RECTNG,radius_6,radius_7,height_3,height_9
+RECTNG,radius_6,radius_7,height_9,height_8
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite
+
+! CFC foil
+ASEL,NONE
+RECTNG,radius_5,radius_6,height_8,height_10
+RECTNG,radius_6,radius_7,height_8,height_10
+ARSYM,Y,ALL,,,,1,0
+AATT,cfc_foil
+
+! Retainer of punch
+ASEL,NONE
+RECTNG,radius_3,radius_4,height_5,height_6
+RECTNG,radius_0,radius_1,height_6,height_7
+RECTNG,radius_1,radius_3,height_6,height_7
+RECTNG,radius_3,radius_4,height_6,height_7
+ARSYM,Y,ALL,,,,1,0
+AATT,inconel
+
+! Retainer of electrode
+ASEL,NONE
+RECTNG,radius_7,radius_8,height_9,height_8
+RECTNG,radius_7,radius_8,height_8,height_10
+RECTNG,radius_5,radius_6,height_10,height_11
+RECTNG,radius_6,radius_7,height_10,height_11
+RECTNG,radius_7,radius_8,height_10,height_11
+ARSYM,Y,ALL,,,,1,0
+AATT,inconel
+
+! Merge keypoints and areas
+ALLSEL,ALL
+NUMMRG,KP,0.01*millimeter
+APLOT
