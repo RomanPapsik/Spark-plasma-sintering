@@ -1,0 +1,29 @@
+!-------------------------------------------------------------------------------
+! EXPORT IMAGE
+!-------------------------------------------------------------------------------
+
+/CMAP,blue-green-red,cmap
+
+! Make background white
+/RGB,INDEX,100,100,100,0
+! Make lines black
+/RGB,INDEX,0,0,0,15
+ 
+! Change output to file
+/SHOW,PNG
+! Set highest compression level
+PNGR,COMP,ON,9
+! Set pixel resolution
+/GFILE,2400
+! Replot to file
+/REPLOT
+! Close file
+/SHOW,CLOSE
+
+! Make background black
+/RGB,INDEX,0,0,0,0
+! Make lines white
+/RGB,INDEX,100,100,100,15
+
+! Replot if necessary
+/REPLOT
