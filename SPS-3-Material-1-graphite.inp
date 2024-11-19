@@ -14,27 +14,38 @@ MPTGEN,1,100,270,30
 *SET,graphite,1
 
 ! Heat capacity joule/(kilogram*kelvin)
-MP,C,graphite,2.26975E3
-*DO,index,1,100
-	T=270+(index-1)*30
-	cp=2.26975E3
-	cp=cp-6.01593E12/T**4
-	cp=cp+6.66995E10/T**3
-	cp=cp-1.81914E8/T**2
-	cp=cp-3.77953E5/T
-	cp=cp-1.016E-2*T
-	MPDATA,C,graphite,index,cp
-*ENDDO
-! MP,C,graphite,34.27,2.72,-0.00096 ! Enweani
-! MP,C,graphite,310.5,1.7 ! Antou
+*IF,machine_variant,EQ,Sinter_monoforce,THEN
+	! Molenat (2010), Pavia (2013), Maniere (2016), Bagheri (2020)
+	MP,C,graphite,+34.27,2.72,-9.6E-4
+*ELSE
+	! Butland (1973)
+	MP,C,graphite,2.26975E3
+	*DO,index,1,100
+		T=270+(index-1)*30
+		cp=2.26975E3
+		cp=cp-6.01593E12/T**4
+		cp=cp+6.66995E10/T**3
+		cp=cp-1.81914E8/T**2
+		cp=cp-3.77953E5/T
+		cp=cp-1.016E-2*T
+		MPDATA,C,graphite,index,cp
+	*ENDDO
+	! Enweani
+	! MP,C,graphite,34.27,2.72,-0.00096
+	! Antou (2009), Want (2010)
+	! MP,C,graphite,310.5,1.7
+*ENDIF
 
-! Thermal conductivity watt/(meter*kelvin)
+! Thermal conductivity [watt/(meter*kelvin)]
+! Maniere (2016), Bagheri (2020)
 MP,KXX,graphite,123,-0.0699,0.0000155
 
-! Electrical resistivity ohm*meter
+! Electrical resistivity [ohm*meter]
+! Maniere (2016), Bagheri (2020)
 MP,RSVX,graphite,+1.7E-5,-1.87E-8,+1.26E-11,-2.44E-15
 
 ! Density kilogram/(meter**3)
+! Molenat (2010), Pavia (2013), Maniere (2016), Bagheri (2020)
 MP,DENS,graphite,1904,-0.0141
 
 ! Emisivity
