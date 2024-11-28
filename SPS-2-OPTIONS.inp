@@ -2,54 +2,65 @@
 ! MACHINE
 !-------------------------------------------------------------------------------
 
-! Available options
+! Available machines
 Sinter_monoforce  = 1 ! Dr. Sinter 2080
 Fritsch_monoforce = 2 ! Dr. Fritsch LSP 100 Basic
 Fritsch_triforce  = 3 ! Dr. Fritsch LSP 100 Friforce
 
 ! Chosen option
-machine_variant = Sinter_monoforce
+machine_variant = Fritsch_triforce
 
 !-------------------------------------------------------------------------------
 ! ANALYSIS TYPE
 !-------------------------------------------------------------------------------
 
-! Available options
+! Available analyses
 steady_state = 1
 transient    = 2
 
 ! Chosen option
-analysis_type = transient
+analysis_type = steady_state
+
+simulate_cooling = false
 
 !-------------------------------------------------------------------------------
 ! LOAD CHANGE
 !-------------------------------------------------------------------------------
 
-! Available options
+! Available loadings
 constant_voltage = 1
 constant_current = 2
 variable_voltage = 3
 variable_current = 4
 
 ! Chosen option
-load_type = variable_voltage
+load_type = constant_current
+
+! Load magnitude
+load_magnitude = 5000.0*ampere
+! load_magnitude = 3.7*volt
 
 !-------------------------------------------------------------------------------
 ! MATERIALS
 !-------------------------------------------------------------------------------
 
-! Available options
+! Available materials
+graphite = 1
+graphite_paper = 2
+cfc_foil = 3
+inconel = 4
 Al2O3 = 5
-TiC   = 6
-SiC   = 7
-TiAl  = 8
+TiC = 6
+SiC = 7
+TiAl = 8
 
 ! Chosen option
-material_specimen = TiC
+material_specimen = graphite
 
 !-------------------------------------------------------------------------------
 ! CONTACT RESISTANCE
 !-------------------------------------------------------------------------------
 
-add_graphite_foil = true
+add_graphite_paper = true
 add_cfc_foil = true
+add_wool = false

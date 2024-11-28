@@ -7,9 +7,9 @@
 ! Select everything
 ALLSEL,ALL
 ! Number of nodes
-*GET,nodes_count,NODE,,COUNT
+*GET,node_count,NODE,,COUNT
 ! Number of elements
-*GET,elements_count,ELEM,,COUNT
+*GET,element_count,ELEM,,COUNT
 
 *IF,analysis_type,EQ,steady_state,THEN
 	! Steady-state analysis
@@ -32,8 +32,8 @@ DSPOPTION,,INCORE
 		*SET,end_time_thermal,current_RMS
 	*ENDIF
 
-	*SET,time_step_initial,end_time_thermal/100
-	*SET,time_step_minimal,end_time_thermal/100
+	*SET,time_step_initial,end_time_thermal/10
+	*SET,time_step_minimal,end_time_thermal/10
 	*SET,time_step_maximal,end_time_thermal/10
 
 *ENDIF
@@ -41,10 +41,10 @@ DSPOPTION,,INCORE
 *IF,analysis_type,EQ,transient,THEN
 
 	! Time stepping
-	*SET,time_step_initial,10*second
+	*SET,time_step_initial,1*second
 	*SET,time_step_minimal,1*second
-	*SET,time_step_maximal,100*second
-	*SET,end_time_thermal,2700*second
+	*SET,time_step_maximal,1*minute
+	*SET,end_time_thermal,30*minute
 
 	! Stepped boundary condition
 	KBC,1
@@ -53,7 +53,11 @@ DSPOPTION,,INCORE
 ! Time steps
 TIME,end_time_thermal
 DELTIM,time_step_initial,time_step_minimal,time_step_maximal,ON
-AUTOTS,TRUE
+*IF,analysis_type,EQ,steady_state,THEN
+	AUTOTS,FALSE
+*ELSE
+	AUTOTS,TRUE
+*ENDIF
 ! Save all nodal data for every substep
 OUTRES,ALL,ALL
 ! No non-linear effects
@@ -64,4 +68,30 @@ NROPT,FULL
 ! Solve
 /UIS,MSGPOP,3
 SOLVE
+FINISH
 /UIS,MSGPOP,0
+
+*IF,analysis_type,EQ,transient,AND,simulate_cooling,EQ,true,THEN
+
+/SOLU
+
+! Continue from the last step
+ANTYPE,TRANS,RESTART,LAST,LAST,CONTINUE
+
+! Increase time
+TIME,end_time_thermal*2
+
+! Delete all couplings
+CPDELE,ALL
+! Delete all currents
+FDELE,ALL,AMPS
+! No voltage
+D,ALL,VOLT,0
+
+! Solve
+/UIS,MSGPOP,3
+SOLVE
+FINISH
+/UIS,MSGPOP,0
+
+*ENDIF

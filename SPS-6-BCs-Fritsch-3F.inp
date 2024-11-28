@@ -66,7 +66,7 @@ NSEL,ALL
 *IF,load_type,EQ,constant_voltage,THEN
 
 ! Voltage
-voltage_RMS = 4.0*volt
+voltage_RMS = load_magnitude
 
 CMSEL,S,surface_load,NODE
 D,ALL,VOLT,voltage_RMS
@@ -82,7 +82,8 @@ NSEL,ALL
 *IF,load_type,EQ,constant_current,THEN
 
 ! Current
-current_RMS = 70.0*ampere
+current_RMS = load_magnitude
+
 retainer_electrode_area = PI/4*(retainer_electrode_diameter**2-retainer_electrode_bore**2)
 current_density = current_RMS / retainer_electrode_area
 

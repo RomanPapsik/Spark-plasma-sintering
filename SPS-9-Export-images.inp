@@ -2,7 +2,7 @@
 ! EXPORT IMAGE
 !-------------------------------------------------------------------------------
 
-/CMAP,blue-green-red,cmap
+/CMAP,Colors-blue-green-red,cmap
 
 ! Make background white
 /RGB,INDEX,100,100,100,0

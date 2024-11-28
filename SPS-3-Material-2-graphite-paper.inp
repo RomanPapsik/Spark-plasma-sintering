@@ -11,15 +11,15 @@ MPTGEN,1,100,270,30
 !-------------------------------------------------------------------------------
 
 ! Assign unique number
-*SET,graphite_foil,2
+*SET,graphite_paper,2
 
 ! Heat capacity joule/(kilogram*kelvin)
 *IF,machine_variant,EQ,Sinter_monoforce,THEN
 	! Molenat (2010), Pavia (2013), Maniere (2016), Bagheri (2020)
-	MP,C,graphite_foil,+34.27,2.72,-9.6E-4
+	MP,C,graphite_paper,+34.27,2.72,-9.6E-4
 *ELSE
 	! Butland (1973)
-	MP,C,graphite_foil,2.26975E3
+	MP,C,graphite_paper,2.26975E3
 	*DO,index,1,100
 		T=270+(index-1)*30
 		cp=2.26975E3
@@ -28,25 +28,35 @@ MPTGEN,1,100,270,30
 		cp=cp-1.81914E8/T**2
 		cp=cp-3.77953E5/T
 		cp=cp-1.016E-2*T
-		MPDATA,C,graphite_foil,index,cp
+		MPDATA,C,graphite_paper,index,cp
 	*ENDDO
 	! Enweani
-	! MP,C,graphite_foil,34.27,2.72,-0.00096
+	! MP,C,graphite_paper,34.27,2.72,-0.00096
 	! Antou (2009), Want (2010)
-	! MP,C,graphite_foil,310.5,1.7
+	! MP,C,graphite_paper,310.5,1.7
 *ENDIF
 
 ! Thermal conductivity [watt/(meter*kelvin)]
-! Maniere (2016), Bagheri (2020)
-MP,KXX,graphite_foil,123,-0.0699,0.0000155
+*IF,machine_variant,EQ,Sinter_monoforce,THEN
+	! Thermally insulating gap Bagheri (2020)
+	MP,KXX,graphite_paper,0.04
+*ELSE
+	! Maniere (2016), Bagheri (2020)
+	MP,KXX,graphite_paper,123,-0.0699,0.0000155
+*ENDIF
 
 ! Electrical resistivity [ohm*meter]
-! Maniere (2016), Bagheri (2020)
-MP,RSVX,graphite_foil,2.23E-4
+*IF,machine_variant,EQ,Sinter_monoforce,THEN
+	!  Thermally insulating gap Bagheri (2020)
+	MP,RSVX,graphite_paper,+1.7E-5,-1.87E-8,+1.26E-11,-2.44E-15
+*ELSE
+	! Fritsch
+	MP,RSVX,graphite_paper,2.23E-4
+*ENDIF
 
 ! Density kilogram/(meter**3)
 ! Molenat (2010), Pavia (2013), Maniere (2016), Bagheri (2020)
-MP,DENS,graphite_foil,1904,-0.0141
+MP,DENS,graphite_paper,1904,-0.0141
 
 ! Emisivity
-MP,EMIS,graphite_foil,0.8
+MP,EMIS,graphite_paper,0.8

@@ -83,7 +83,11 @@ RECTNG,radius_1,radius_2,height_0,height_1
 RECTNG,radius_1,radius_2,height_1,height_2
 RECTNG,radius_1,radius_2,height_2,height_3
 ARSYM,Y,ALL,,,,1,0
-AATT,graphite_foil
+*IF,add_graphite_paper,EQ,true,THEN
+	AATT,graphite_paper
+*ELSE
+	AATT,graphite
+*ENDIF
 
 ! Die
 ASEL,NONE
@@ -126,7 +130,11 @@ ASEL,NONE
 RECTNG,radius_5,radius_6,height_8,height_10
 RECTNG,radius_6,radius_7,height_8,height_10
 ARSYM,Y,ALL,,,,1,0
-AATT,cfc_foil
+*IF,add_cfc_foil,EQ,true,THEN
+	AATT,cfc_foil
+*ELSE
+	AATT,inconel
+*ENDIF
 
 ! Retainer of punch
 ASEL,NONE
@@ -149,5 +157,5 @@ AATT,inconel
 
 ! Merge keypoints and areas
 ALLSEL,ALL
-NUMMRG,KP,0.01*millimeter
+NUMMRG,KP,0.001*millimeter
 APLOT

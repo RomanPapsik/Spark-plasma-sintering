@@ -49,4 +49,5 @@ ohm = volt/ampere
 *ABBR,POWRGRPH
 
 *ABBR,RESTART,/INPUT,SPS-0,inp
-! *ABBR,IMAGE,/INPUT,SPS-1-Image,inp
+*ABBR,PNG,/INPUT,SPS-9-Export-images,inp
+*ABBR,XML,/INPUT,SPS-9-Export-data,inp

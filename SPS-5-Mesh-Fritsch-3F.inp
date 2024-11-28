@@ -13,7 +13,7 @@ KEYOPT,thermoelectric_element,3,1
 KEYOPT,thermoelectric_element,1,110
 
 ! Sizing
-element_size = 1*millimeter
+element_size = 1*millimeter/2
 LSEL,ALL
 LESIZE,ALL,element_size,,,,1
 
@@ -31,8 +31,8 @@ NUMMRG,ALL,0.001*micrometer
 /NUMBER,1
 
 ! Symmetry expansion
-/EXPAND,1,RECT,HALF,1E-12
-EPLOT
+! /EXPAND,1,RECT,HALF,1E-12
+! EPLOT
 
 !-------------------------------------------------------------------------------
 ! COMPONENTS
