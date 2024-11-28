@@ -1,0 +1,35 @@
+/PREP7
+
+!-------------------------------------------------------------------------------
+! INTERIOR DISCRETIZATION
+!-------------------------------------------------------------------------------
+
+! 2D quadratic element
+thermoelectric_element = 222
+ET,thermoelectric_element,PLANE222
+! Axisymmetric formulation
+KEYOPT,thermoelectric_element,3,1
+! Thermoelectric formulation
+KEYOPT,thermoelectric_element,1,110
+
+! Sizing
+element_size = 1*millimeter
+LSEL,ALL
+LESIZE,ALL,element_size,,,,1
+
+! Meshing
+TYPE,thermoelectric_element
+MSHAPE,hexahedral_mesh,2D
+MSHKEY,mapped_mesh
+AMESH,ALL
+
+! Merge everything
+NUMMRG,ALL,0.001*micrometer
+
+! Numbering
+/PNUM,MAT,1
+/NUMBER,1
+
+! Symmetry expansion
+/EXPAND,1,RECT,HALF,1E-12
+EPLOT

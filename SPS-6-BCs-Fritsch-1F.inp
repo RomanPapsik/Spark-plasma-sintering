@@ -1,0 +1,120 @@
+!-------------------------------------------------------------------------------
+! ELECTRIC POTENTIAL
+!-------------------------------------------------------------------------------
+
+ground = 0*volt
+
+NSEL,S,LOC,Y,-height_7,-height_7
+D,ALL,VOLT,ground
+NSEL,ALL
+
+!-------------------------------------------------------------------------------
+! ELECTRIC POTENTIAL
+!-------------------------------------------------------------------------------
+
+RMS_voltage = 5.1*volt
+variable_voltage = true
+
+! Time varying voltage
+time_end = 45*minute
+time_step = 1*second
+steps_count = time_end/time_step + 1
+*DIM,voltage,TABLE,steps_count,,,time
+*DO,step,1,steps_count,+1
+voltage(step,0) = (step-1)*time_step
+voltage(step,1) = 5.1*(1-exp(-0.0016345*(step-1)*time_step))
+*ENDDO
+! *VPLOT,voltage(1,0),voltage(1,1)
+
+NSEL,S,LOC,Y,+height_7,+height_7
+*IF,variable_voltage,EQ,false,THEN
+	D,ALL,VOLT,RMS_voltage
+*ELSE
+	D,ALL,VOLT,%voltage%
+*ENDIF
+NSEL,ALL
+
+!-------------------------------------------------------------------------------
+! CONVECTIVE COOLING
+!-------------------------------------------------------------------------------
+
+! Water temperature
+water_temperature = 300*kelvin
+
+! Heat convection coefficient
+heat_convection_coefficient = 880*watt/(kelvin*meter**2)
+
+! Convection at bases
+NSEL,S,LOC,Y,+height_8,+height_8
+NSEL,A,LOC,Y,-height_8,-height_8
+SF,ALL,CONV,heat_convection_coefficient,water_temperature
+NSEL,ALL
+
+!-------------------------------------------------------------------------------
+! RADIATION
+!-------------------------------------------------------------------------------
+
+! Surface elements for radiation
+surface_element = 151
+ET,surface_element,SURF151
+! Axial symmetry
+KEYOPT,surface_element,3,1
+! Radiation included
+KEYOPT,surface_element,5,1
+! Extra node
+KEYOPT,surface_element,9,1
+! Stafan-Bolzman constant
+Stefan_Boltzmann = 5.670374419E-8
+! Form factor
+R,surface_element,1,Stefan_Boltzmann
+
+! Distant node for radiation
+N,,2*radius_6,0,0
+distant_node = node(2*radius_6,0,0)
+
+! BCs for distant node
+D,distant_node,TEMP,water_temperature
+TUNIF,water_temperature
+
+!-------------------------------------------------------------------------------
+! RADIATION OF INCONEL
+!-------------------------------------------------------------------------------
+
+NSEL,S,LOC,Y,+height_5,+height_7
+NSEL,A,LOC,Y,-height_5,-height_7
+NSEL,R,LOC,X,radius_6,radius_6
+CM,inconel_surface,NODE
+
+NSEL,S,NODE,,distant_node
+CMSEL,A,inconel_surface,NODE
+TYPE,surface_element
+REAL,surface_element
+MAT,inconel
+ESURF,distant_node
+
+!-------------------------------------------------------------------------------
+! RADIATION OF GRAPHITE
+!-------------------------------------------------------------------------------
+
+NSEL,S,LOC,Y,-height_3,+height_3
+NSEL,R,LOC,X,radius_4,radius_4
+CM,radiation_surface,NODE
+
+NSEL,S,LOC,Y,+height_3,+height_4
+NSEL,A,LOC,Y,-height_3,-height_4
+NSEL,R,LOC,X,radius_2,radius_2
+CMSEL,A,radiation_surface,NODE
+CM,radiation_surface,NODE
+
+NSEL,S,LOC,Y,+height_4,+height_5
+NSEL,A,LOC,Y,-height_4,-height_5
+NSEL,R,LOC,X,radius_5,radius_5
+CMSEL,A,radiation_surface,NODE
+CM,radiation_surface,NODE
+
+NSEL,S,NODE,,distant_node
+CMSEL,A,radiation_surface,NODE
+TYPE,surface_element
+REAL,surface_element
+MAT,graphite
+ESURF,distant_node

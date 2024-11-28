@@ -1,0 +1,81 @@
+/PREP7
+
+!-------------------------------------------------------------------------------
+! INTERIOR DISCRETIZATION
+!-------------------------------------------------------------------------------
+
+! 2D quadratic element
+thermoelectric_element = 222
+ET,thermoelectric_element,PLANE222
+! Axisymmetric formulation
+KEYOPT,thermoelectric_element,3,1
+! Thermoelectric formulation
+KEYOPT,thermoelectric_element,1,110
+
+! Sizing
+element_size = 1*millimeter
+LSEL,ALL
+LESIZE,ALL,element_size,,,,1
+
+! Meshing
+TYPE,thermoelectric_element
+MSHAPE,hexahedral_mesh,2D
+MSHKEY,mapped_mesh
+AMESH,ALL
+
+! Merge everything
+NUMMRG,ALL,0.001*micrometer
+
+! Numbering
+/PNUM,MAT,1
+/NUMBER,1
+
+! Symmetry expansion
+/EXPAND,1,RECT,HALF,1E-12
+EPLOT
+
+!-------------------------------------------------------------------------------
+! COMPONENTS
+!-------------------------------------------------------------------------------
+
+! Water-cooled surface
+KSEL,S,LOC,Y,-height_8,-height_8
+KSEL,A,LOC,Y,+height_8,+height_8
+LSLK,S,1
+NSLL,S,1
+CM,surface_water,NODE
+ALLSEL,ALL
+
+! Surface for radiation
+KSEL,S,LOC,Y,-height_2,-height_3
+KSEL,A,LOC,Y,+height_2,+height_3
+KSEL,R,LOC,X,punch_diameter/2,punch_diameter/2
+LSLK,S,1
+KSEL,S,LOC,X,die_diameter/2,die_diameter/2
+KSEL,R,LOC,Y,-die_height/2,+die_height/2
+LSLK,A,1
+KSEL,S,LOC,X,inner_spacer_diameter/2,inner_spacer_diameter/2
+KSEL,R,LOC,Y,-height_4,height_4
+LSLK,A,1
+KSEL,S,LOC,X,middle_spacer_diameter/2,middle_spacer_diameter/2
+KSEL,R,LOC,Y,-height_5,height_5
+LSLK,A,1
+KSEL,S,LOC,X,outer_spacer_diameter/2,outer_spacer_diameter/2
+LSLK,A,1
+NSLL,S,1
+CM,surface_radiation,NODE
+ALLSEL,ALL
+
+! Ground side
+KSEL,S,LOC,Y,+height_8,+height_8
+LSLK,S,1
+NSLL,S,1
+CM,surface_ground,NODE
+ALLSEL,ALL
+
+! Load side
+KSEL,S,LOC,Y,-height_8,-height_8
+LSLK,S,1
+NSLL,S,1
+CM,surface_load,NODE
+ALLSEL,ALL
