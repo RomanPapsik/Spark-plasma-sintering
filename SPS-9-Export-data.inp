@@ -1,0 +1,149 @@
+!-------------------------------------------------------------------------------
+! CREATE FILE NAME
+!-------------------------------------------------------------------------------
+
+! Create a file name
+*DEL,thefile
+*DIM,thefile,STRING,248
+*SET,thefile(1),'SPS-machine-%CHRVAL(machine_variant)%-analysis-%CHRVAL(analysis_type)%-loading-%CHRVAL(load_type)%-load-%CHRVAL(load_magnitude)%-specimen-%CHRVAL(material_specimen)%-time-%CHRVAL(end_time_thermal)%-cooling-%CHRVAL(simulate_cooling)%'
+
+!-------------------------------------------------------------------------------
+! OPEN FILE
+!-------------------------------------------------------------------------------
+
+! Open the output XMLfile
+*CFOPEN,thefile(1),xml
+
+!-------------------------------------------------------------------------------
+! WRITE RESULTS
+!-------------------------------------------------------------------------------
+
+! Opening tag
+*VWRITE
+<result>
+
+*GET,date_ymd,ACTIVE,,date
+year = NINT(date_ymd/1E4)
+month = NINT((date_ymd - year*1E4)/1E2)
+day = NINT(date_ymd - year*1E4 - month*1E2)
+
+! Date
+*VWRITE,year,month,day
+<date>%4.4I-%02.2I-%02.2I</date>
+
+! Units
+*VWRITE,
+<!--units>
+*VWRITE,
+<time>second</time>
+*VWRITE,
+<length>metre</length>
+*VWRITE,
+<mass>kilogram</mass>
+*VWRITE,
+<temperature>kelvin</temperature>
+*VWRITE,
+<current>ampere</current>
+*VWRITE,
+</units-->
+
+! Mesh info
+*VWRITE,
+<mesh>
+*VWRITE,
+<type>PLANE222</type>
+*VWRITE,element_count
+<elements>%I</elements>
+*VWRITE,node_count
+<nodes>%I</nodes>
+*VWRITE,
+</mesh>
+
+! Materials
+*VWRITE,
+<!--materials>
+*VWRITE,
+<graphite id="1"/>
+*VWRITE,
+<graphite_paper id="2"/>
+*VWRITE,
+<cfc_foil id="3"/>
+*VWRITE,
+<inconel id="4"/>
+*VWRITE,
+<Al2O3 id="5"/>
+*VWRITE,
+<TiC id="6"/>
+*VWRITE,
+<SiC id="7"/>
+*VWRITE,
+<TiAl id="8"/>
+*VWRITE,
+</materials-->
+
+! Dimensions
+*VWRITE,
+<dimensions>
+*VWRITE,
+</dimensions>
+
+! Options
+*VWRITE,
+<options>
+*VWRITE,machine_variant
+<machine_variant>%I</machine_variant>
+*VWRITE,analysis_type
+<analysis_type>%I</analysis_type>
+*VWRITE,simulate_cooling
+<simulate_cooling>%I</simulate_cooling>
+*VWRITE,add_add_wool
+<add_wool>%I</add_wool>
+*VWRITE,load_type
+<load_type>%I</load_type>
+*VWRITE,load_magnitude
+<load_magnitude>%F</load_magnitude>
+*VWRITE,material_specimen
+<material_specimen>%I</material_specimen>
+*VWRITE,add_graphite_paper
+<add_graphite_paper>%I</add_graphite_paper>
+*VWRITE,add_cfc_foil
+<add_cfc_foil>%I</add_cfc_foil>
+*VWRITE,add_add_wool
+<add_wool>%I</add_wool>
+*VWRITE,end_time_thermal
+<end_time_thermal>%F</end_time_thermal>
+*VWRITE,
+</options>
+
+! Data
+*IF,analysis_type,EQ,transient,THEN
+
+! Temperature evolution (specimen and die)
+! Voltage evolution (reainer or electrode)
+*VWRITE,
+('<evolution>')
+*VWRITE,history_data(1,1),history_data(1,2),history_data(1,3),history_data(1,4),history_data(1,5)
+(T4,'<point t="',EN18.9E2,'" Tsample="',EN18.9E2,'" Tside="',EN18.9E2,'" Tdie="',EN18.9E2,'" U="',EN18.9E2,'" />')
+*VWRITE,
+('</evolution>')
+
+*ENDIF
+
+! Data
+*IF,analysis_type,EQ,steady_state,THEN
+! Temperature profile (specimen to die at the end of heating)
+
+! Current density profile (along the electrode at the end of heating)
+
+*ENDIF
+
+! Closing tag
+*VWRITE,
+</result>
+
+!-------------------------------------------------------------------------------
+! CLOSE FILE
+!-------------------------------------------------------------------------------
+
+! Close file
+*CFCLOS

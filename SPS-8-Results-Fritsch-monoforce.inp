@@ -1,0 +1,116 @@
+!-------------------------------------------------------------------------------
+! SHORTCUTS
+!-------------------------------------------------------------------------------
+
+*ABBR,POWRGRPH
+
+*ABBR,RESTART,/INPUT,SPS-0,inp
+*ABBR,IMAGE,/INPUT,SPS-8-Image,inp
+
+*ABBR,300S,SET,,,,,300*second
+*ABBR,800S,SET,,,,,800*second
+*ABBR,1500S,SET,,,,,1500*second
+*ABBR,2000S,SET,,,,,2000*second
+
+*ABBR,PLT_TEMP,/INPUT,SPS-8-Results-Basic,inp,,:temp
+*ABBR,PLT_VOLT,/INPUT,SPS-8-Results-Basic,inp,,:volt
+*ABBR,PLT_CURR,/INPUT,SPS-8-Results-Basic,inp,,:curr
+
+*ABBR,SPEC_TEMP,/INPUT,SPS-8-Results-Basic,inp,,:spec
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+/POST1
+
+SET,LAST
+! SET,,,,,300*second
+! SET,,,,,800*second
+! SET,,,,,1500*second
+! SET,,,,,2000*second
+
+*GO,:temp
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+:temp
+ESEL,S,TYPE,,thermoelectric_element
+/CONTOUR,ALL,,300,25,2525
+PLNSOL,TEMP
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+:volt
+ESEL,S,TYPE,,thermoelectric_element
+/CONTOUR,ALL,,0,0.1,5
+PLNSOL,VOLT
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+:curr
+ESEL,S,TYPE,,thermoelectric_element
+/CONTOUR,ALL,128,0,,11.1E6
+PLNSOL,JC,SUM
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+:spec
+/CONTOUR,ALL
+ESEL,S,CENT,Y,-height_2,+height_2
+ESEL,R,CENT,X,radius_1,radius_2
+PLNSOL,TEMP
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+:ad
+! Define new path
+PADELE,ALL
+*SET,path_divisions,1000
+PATH,path_radius,2,7,path_divisions
+PPATH,1,node(0,0,0)
+PPATH,2,node(die_diameter/2,0,0)
+! Map onto path
+PDEF,temp,TEMP,,AVG
+! Plot paths
+/AXLAB,X,Location (mm)
+/AXLAB,Y,Temperature (K)
+/XRANGE,0,die_diameter/2
+PLPATH,temp
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+:ag
+! Define new path
+PADELE,ALL
+*SET,path_divisions,1000
+PATH,path_radius,2,7,path_divisions
+PPATH,1,node(0,0,0)
+PPATH,2,node(0,height_8,0)
+! Map onto path
+PDEF,temp,TEMP,,AVG
+! Plot paths
+/AXLAB,X,Location (mm)
+/AXLAB,Y,Temperature (K)
+/XRANGE,0,150*millimeter
+PLPATH,temp
+*GO,:skip
+
+:skip

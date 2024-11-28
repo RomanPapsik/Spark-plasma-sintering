@@ -1,0 +1,89 @@
+!-------------------------------------------------------------------------------
+! SHORTCUTS
+!-------------------------------------------------------------------------------
+
+*ABBR,POWRGRPH
+
+*ABBR,TIME_END,SET,LAST
+*IF,machine_variant,EQ,Sinter_monoforce,THEN
+	*ABBR,300S,SET,,,,,300*second
+	*ABBR,800S,SET,,,,,800*second
+	*ABBR,1500S,SET,,,,,1500*second
+	*ABBR,2000S,SET,,,,,2000*second
+*ENDIF
+
+*ABBR,FIELD_T,/INPUT,SPS-8-Results-1-fields,inp,,:temp
+*ABBR,FIELD_U,/INPUT,SPS-8-Results-1-fields,inp,,:volt
+*ABBR,FIELD_J,/INPUT,SPS-8-Results-1-fields,inp,,:curr
+*ABBR,FIELD_E,/INPUT,SPS-8-Results-1-fields,inp,,:field
+*ABBR,SPEC_T,/INPUT,SPS-8-Results-1-fields,inp,,:spec
+
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! TEMPERATURE
+!-------------------------------------------------------------------------------
+
+:temp
+/POST1
+ESEL,S,TYPE,,thermoelectric_element
+*IF,machine_variant,EQ,Sinter_monoforce,THEN
+	/CONTOUR,ALL,,600,25,1900
+*ELSE
+	/CONTOUR,ALL,128
+*ENDIF
+PLNSOL,TEMP
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! ELECTRIC POTENTIAL
+!-------------------------------------------------------------------------------
+
+:volt
+/POST1
+ESEL,S,TYPE,,thermoelectric_element
+! /CONTOUR,ALL,,0,0.1,5
+/CONTOUR,ALL,128
+PLNSOL,VOLT
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! ELECTRIC FIELD
+!-------------------------------------------------------------------------------
+
+:field
+/POST1
+ESEL,S,TYPE,,thermoelectric_element
+! /CONTOUR,ALL,,0,0.1,5
+/CONTOUR,ALL,128
+PLNSOL,EF,SUM
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! CURRENT DENSITY
+!-------------------------------------------------------------------------------
+
+:curr
+/POST1
+ESEL,S,TYPE,,thermoelectric_element
+*IF,machine_variant,EQ,Sinter_monoforce,THEN
+	/CONTOUR,ALL,128,0,,3E6
+*ELSE
+	/CONTOUR,ALL,128
+*ENDIF
+PLNSOL,JC,Y
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! TEMPERATURE SPECIMEN
+!-------------------------------------------------------------------------------
+
+:spec
+/POST1
+/CONTOUR,ALL,9
+ESEL,S,CENT,Y,-specimen_height/2,+specimen_height/2
+ESEL,R,CENT,X,0,specimen_diameter/2
+PLNSOL,TEMP
+*GO,:skip
+
+:skip

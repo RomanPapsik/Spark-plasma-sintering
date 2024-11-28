@@ -1,0 +1,68 @@
+!-------------------------------------------------------------------------------
+! SHORTCUTS
+!-------------------------------------------------------------------------------
+
+*ABBR,HIST_T,/INPUT,SPS-8-Results-3-history,inp,,:temp
+*ABBR,HIST_U,/INPUT,SPS-8-Results-3-history,inp,,:volt
+
+!-------------------------------------------------------------------------------
+! TIME DEPENDANT RESULTS
+!-------------------------------------------------------------------------------
+
+/POST26
+
+! Specifies the number of variables allowed in POST26
+NUMVAR,5
+
+! Get temperature in the middle
+NSOL,2,node(0,0,0),TEMP,,T_CENT
+NSOL,3,node(specimen_diameter/2,0,0),TEMP,,T_DIAM
+NSOL,4,node(die_diameter/2,0,0),TEMP,,T_DIE
+NSOL,5,node(electrode_bore/2,height_load,0),VOLT,,U_ELEC
+STORE,NEW
+
+*GET,time_points,VARI,,NSETS
+*DIM,history_data,ARRAY,time_points,5
+*DO,c,1,5
+VGET,history_data(1,c),c
+*ENDDO
+
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! TEMPERATURE PROFILES
+!-------------------------------------------------------------------------------
+
+:temp
+/POST26
+/TITLE,Temperature evolution
+/XRANGE!,0,1000
+/YRANGE
+XVAR,1
+PLVAR,2,3,4
+/TITLE
+*GO,:skip
+
+!-------------------------------------------------------------------------------
+! VOLTAGE PROFILES
+!-------------------------------------------------------------------------------
+
+:volt
+/POST26
+/TITLE,Voltage evolution
+/XRANGE!,0,1000
+/YRANGE
+XVAR,1
+PLVAR,5
+/TITLE
+*GO,:skip
+
+! ESOL,7,enear(node(electrode_bore/2,height_11,0)),JC,Y,I_TL
+! ESOL,8,enear(node(electrode_diameter/2,height_11,0)),JC,Y,I_TR
+! XVAR,1
+! PLVAR,7,8
+
+! *DIM,test,ARRAY,270,1
+! VGET,test(1,1,1),3
+
+:skip

@@ -1,0 +1,62 @@
+!-------------------------------------------------------------------------------
+! SHORTCUTS
+!-------------------------------------------------------------------------------
+
+*ABBR,PATH_T,/INPUT,SPS-8-Results-2-paths,inp,,:temp
+*ABBR,PATH_J,/INPUT,SPS-8-Results-2-paths,inp,,:jdens
+
+!-------------------------------------------------------------------------------
+! RESULTS
+!-------------------------------------------------------------------------------
+
+/POST1
+
+SET,,,,,end_time_thermal
+
+*SET,path_divisions,1000
+
+!-------------------------------------------------------------------------------
+! FROM Specimen centre TO die surface
+!-------------------------------------------------------------------------------
+
+:temp
+! Initialize new path
+PADELE,path_radius
+PATH,path_radius,2,7,path_divisions
+! Define path points
+PPATH,1,node(0,0,0)
+PPATH,2,node(die_diameter/2,0,0)
+! Map onto path
+PDEF,TEMP,TEMP,,AVG
+! Set axes
+/AXLAB,X,Path (mm)
+/AXLAB,Y,Temperature (K)
+/XRANGE,0,die_diameter/2
+! Plot paths
+PLPATH,TEMP
+
+!-------------------------------------------------------------------------------
+! ALONG electrode base
+!-------------------------------------------------------------------------------
+
+:jdens
+! Initialize new path
+PADELE,path_electrode
+PATH,path_electrode,2,4+2,path_divisions
+! Define path points
+PPATH,1,node(electrode_bore/2,height_load,0)
+*IF,machine_variant,EQ,Fritsch_triforce,THEN
+	PPATH,2,node(retainer_electrode_diameter/2,height_load,0)
+*ELSE
+	PPATH,2,node(electrode_diameter/2,height_load,0)
+*ENDIF
+! Map onto path
+PDEF,VOLT,VOLT,,AVG
+PDEF,JCZ,JC,Y,AVG
+! Set axes
+/AXLAB,X,Path (mm)
+/AXLAB,Y,Temperature (K)
+/XRANGE!,0,150*millimeter
+/YRANGE!,-1500e3,-500e3
+! Plot paths
+PLPATH,JCZ
