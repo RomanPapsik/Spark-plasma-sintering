@@ -41,15 +41,18 @@ teperature_controlled = 5
 load_type = teperature_controlled
 
 *IF,load_type,EQ,teperature_controlled,THEN
-	! Load magnitude
+	! Load magnitude and duration
 	load_magnitude = 5000.0*ampere
+	heating_time = 30*minute
 *ELSEIF,load_type,EQ,constant_voltage,THEN
-	! Load magnitude
+	! Load magnitude and duration
 	load_magnitude = 3.7*volt
+	heating_time = 30*minute
 *ELSEIF,load_type,EQ,teperature_controlled,THEN
 	! Requested temperature and heating rate rate
 	goal_temperature = 1500+273.15*kelvin
-	goal_heating_rate = 50*kelvin/minute
+	heating_rate = 50*kelvin/minute
+	dwell_time = 15*minute
 *ENDIF
 
 !-------------------------------------------------------------------------------
