@@ -19,9 +19,12 @@ steady_state = 1
 transient    = 2
 
 ! Chosen option
-analysis_type = steady_state
+analysis_type = transient
 
-simulate_cooling = false
+*IF,analysis_type,EQ,transient,THEN
+	! Optional cooling
+	simulate_cooling = false
+*ENDIF
 
 !-------------------------------------------------------------------------------
 ! LOAD CHANGE
@@ -32,13 +35,22 @@ constant_voltage = 1
 constant_current = 2
 variable_voltage = 3
 variable_current = 4
+teperature_controlled = 5
 
 ! Chosen option
-load_type = constant_current
+load_type = teperature_controlled
 
-! Load magnitude
-load_magnitude = 5000.0*ampere
-! load_magnitude = 3.7*volt
+*IF,load_type,EQ,teperature_controlled,THEN
+	! Load magnitude
+	load_magnitude = 5000.0*ampere
+*ELSEIF,load_type,EQ,constant_voltage,THEN
+	! Load magnitude
+	load_magnitude = 3.7*volt
+*ELSEIF,load_type,EQ,teperature_controlled,THEN
+	! Requested temperature and heating rate rate
+	goal_temperature = 1500+273.15*kelvin
+	goal_heating_rate = 50*kelvin/minute
+*ENDIF
 
 !-------------------------------------------------------------------------------
 ! MATERIALS
