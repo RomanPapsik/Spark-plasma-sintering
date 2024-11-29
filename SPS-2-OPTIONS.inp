@@ -35,10 +35,10 @@ constant_voltage = 1
 constant_current = 2
 variable_voltage = 3
 variable_current = 4
-temperature_controlled = 5
+temperature_controll = 5
 
 ! Chosen option
-load_type = temperature_controlled
+load_type = temperature_controll
 
 *IF,load_type,EQ,constant_voltage,THEN
 	! Load magnitude and duration
@@ -46,13 +46,13 @@ load_type = temperature_controlled
 	heating_time = 30*minute
 *ELSEIF,load_type,EQ,constant_current,THEN
 	! Load magnitude and duration
-	load_magnitude = 5000.0*ampere
+	load_magnitude = 5000*ampere
 	heating_time = 30*minute
-*ELSEIF,load_type,EQ,temperature_controlled,THEN
-	! Requested temperature and heating rate rate
-	goal_temperature = 1500+273.15*kelvin
-	heating_rate = 50*kelvin/minute
+*ELSEIF,load_type,EQ,temperature_controll,THEN
+	! Requested dwell temperature, time and heating rate
+	dwell_temperature = 1800*kelvin
 	dwell_time = 15*minute
+	heating_rate = 100*kelvin/minute
 *ENDIF
 
 !-------------------------------------------------------------------------------

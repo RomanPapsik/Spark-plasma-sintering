@@ -39,8 +39,8 @@
 
 /INPUT,SPS-7-Solution,inp
 
-/INPUT,SPS-8-Results-1-fields,inp
-/INPUT,SPS-8-Results-2-paths,inp
+! /INPUT,SPS-8-Results-1-fields,inp
+! /INPUT,SPS-8-Results-2-paths,inp
 /INPUT,SPS-8-Results-3-history,inp
 
-/INPUT,SPS-9-Export-data,inp
+! /INPUT,SPS-9-Export-data,inp

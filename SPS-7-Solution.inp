@@ -1,6 +1,6 @@
-!-------------------------------------------------------------------------------
+!===============================================================================
 ! SOLUTION OF PROBLEM
-!-------------------------------------------------------------------------------
+!===============================================================================
 
 /SOLU
 
@@ -21,9 +21,19 @@ ALLSEL,ALL
 
 ! Sparse solver
 EQSLV,SPAR
+! Solve using RAM
 DSPOPTION,,INCORE
+! Save all nodal data for every substep
+OUTRES,ALL,ALL
+! No non-linear effects
+NLGEOM,OFF
+! Full Newton-Raphson procedure
+NROPT,FULL
 
-! Timing
+!-------------------------------------------------------------------------------
+! STEADY-STATE ANALYSIS
+!-------------------------------------------------------------------------------
+
 *IF,analysis_type,EQ,steady_state,THEN
 
 	*IF,load_type,EQ,constant_voltage,THEN
@@ -36,62 +46,161 @@ DSPOPTION,,INCORE
 	*SET,time_step_minimal,end_time_thermal/10
 	*SET,time_step_maximal,end_time_thermal/10
 
+	TIME,end_time_thermal
+	DELTIM,time_step_initial,time_step_minimal,time_step_maximal,ON
+	AUTOTS,FALSE
+
+	! Solve
+	/UIS,MSGPOP,3
+	SOLVE
+	FINISH
+	/UIS,MSGPOP,0
 *ENDIF
 
-*IF,analysis_type,EQ,transient,THEN
+!-------------------------------------------------------------------------------
+! TRANSIENT ANALYSIS WITH PRE-DEFINED LOAD
+!-------------------------------------------------------------------------------
+
+*IF,analysis_type,EQ,transient,AND,load_type,NE,temperature_controll,THEN
 
 	! Time stepping
 	*SET,time_step_initial,1*second
 	*SET,time_step_minimal,1*second
 	*SET,time_step_maximal,1*minute
-	*SET,end_time_thermal,30*minute
+	*SET,end_time_thermal,heating_time
 
 	! Stepped boundary condition
 	KBC,1
-*ENDIF
 
-! Time steps
-TIME,end_time_thermal
-DELTIM,time_step_initial,time_step_minimal,time_step_maximal,ON
-*IF,analysis_type,EQ,steady_state,THEN
-	AUTOTS,FALSE
-*ELSE
+	TIME,end_time_thermal
+	DELTIM,time_step_initial,time_step_minimal,time_step_maximal,ON
 	AUTOTS,TRUE
-*ENDIF
-! Save all nodal data for every substep
-OUTRES,ALL,ALL
-! No non-linear effects
-NLGEOM,OFF
-! Full Newton-Raphson procedure
-NROPT,FULL
 
-! Solve
-/UIS,MSGPOP,3
-SOLVE
-FINISH
-/UIS,MSGPOP,0
+	! Solve
+	/UIS,MSGPOP,3
+	SOLVE
+	FINISH
+	/UIS,MSGPOP,0
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! TRANSIENT ANALYSIS WITH AUTOMATIC CONTROLL
+!-------------------------------------------------------------------------------
+
+*IF,analysis_type,EQ,transient,AND,load_type,EQ,temperature_controll,THEN
+
+	! For restarts
+	RESCONTROL,DEFINE,LAST,LAST
+
+	*SET,dwell_start,(dwell_temperature-300)/heating_rate
+	*SET,dwell_end,dwell_start+dwell_time
+	
+	*SET,voltage_minimal,1*volt
+	*SET,voltage_maximal,5*volt
+	*SET,voltage_initial,voltage_minimal
+
+	*SET,parameter_Kp,0.005
+	*SET,parameter_Ki,0
+	*SET,parameter_Kd,0
+	*SET,controller_output,0
+
+	! Start with the heating
+	*SET,time_increment,1*second!dwell_start/10!1*minute
+	*SET,temperature_is,300*kelvin
+	*DIM,heating_monitor,TABLE,dwell_start/time_increment,6
+	*DO,time_new,time_increment,dwell_start,time_increment
+
+		! Calculate desired temperature
+		*SET,temperature_should,300+time_new*heating_rate
+
+		/SOLU
+		*IF,time_new,LE,time_increment,THEN
+			! New analysis in the first step
+			ANTYPE,TRANS,NEW
+
+			! Adjust load
+			*SET,voltage_new,voltage_initial
+		*ELSE
+			! Save parameters before restart destroys them
+			PARSAV,ALL,parameters,tmp
+			! Continue from the last step
+			ANTYPE,TRANS,RESTART,LAST,LAST,CONTINUE
+			! Restore parameters
+			PARRES,NEW,parameters,tmp
+
+			! Adjust load
+			*SET,voltage_old,voltage_new
+			*SET,voltage_new,MAX(voltage_minimal,MIN(voltage_maximal,voltage_old+controller_output))
+		*ENDIF
+
+		! Change boundary conditions
+		CMSEL,S,surface_load,NODE
+		D,ALL,VOLT,voltage_new
+		NSEL,ALL
+		
+		! Solve
+		TIME,time_new
+		/UIS,MSGPOP,3
+		SOLVE
+		/UIS,MSGPOP,0
+
+		/POST1
+		! Store previous temperature
+		*SET,temperature_was,temperature_is
+		! Retrive new temperature
+		*GET,temperature_is,NODE,node(die_diameter/2,0,0),TEMP
+		! Calculate actual heating rate
+		*SET,heating_rate_is,(temperature_is-temperature_was)/time_increment
+		! Check temperature error
+		*SET,temperature_error,temperature_should-temperature_is
+		! Adjust P controller output
+		*SET,controller_output,parameter_Kp*temperature_error
+
+		/COM,Time is %time_new% (stop at dwell start %dwell_start%)
+		/COM,Temperature should be %temperature_should% and is %temperature_is% (error %NINT(temperature_error)%)
+		/COM,Heating rate should be %heating_rate% and is %heating_rate_is%
+
+		*SET,heating_monitor(time_new/time_increment,0),time_new
+		*SET,heating_monitor(time_new/time_increment,1),temperature_should
+		*SET,heating_monitor(time_new/time_increment,2),temperature_is
+		*SET,heating_monitor(time_new/time_increment,3),temperature_error
+		*SET,heating_monitor(time_new/time_increment,4),heating_rate
+		*SET,heating_monitor(time_new/time_increment,5),heating_rate_is
+		*SET,heating_monitor(time_new/time_increment,6),controller_output
+
+		! *VLEN,time_new/time_increment
+		! *VPLOT,heating_monitor(1,0),heating_monitor(1,1),2,3
+		! *VPLOT,heating_monitor(1,0),heating_monitor(1,4),5
+	*ENDDO
+
+	! Continue with the dwell temperature
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! OPTIONAL COOLDOWN
+!-------------------------------------------------------------------------------
 
 *IF,analysis_type,EQ,transient,AND,simulate_cooling,EQ,true,THEN
 
-/SOLU
+	/SOLU
 
-! Continue from the last step
-ANTYPE,TRANS,RESTART,LAST,LAST,CONTINUE
+	! Continue from the last step
+	ANTYPE,TRANS,RESTART,LAST,LAST,CONTINUE
 
-! Increase time
-TIME,end_time_thermal*2
+	! Increase time
+	TIME,end_time_thermal*2
 
-! Delete all couplings
-CPDELE,ALL
-! Delete all currents
-FDELE,ALL,AMPS
-! No voltage
-D,ALL,VOLT,0
+	! Delete all couplings
+	CPDELE,ALL
+	! Delete all currents
+	FDELE,ALL,AMPS
+	! No voltage
+	D,ALL,VOLT,0
 
-! Solve
-/UIS,MSGPOP,3
-SOLVE
-FINISH
-/UIS,MSGPOP,0
+	! Solve
+	/UIS,MSGPOP,3
+	SOLVE
+	FINISH
+	/UIS,MSGPOP,0
 
 *ENDIF

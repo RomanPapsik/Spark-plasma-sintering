@@ -13,7 +13,7 @@ KEYOPT,thermoelectric_element,3,1
 KEYOPT,thermoelectric_element,1,110
 
 ! Sizing
-element_size = 1*millimeter/2
+element_size = 1*millimeter
 LSEL,ALL
 LESIZE,ALL,element_size,,,,1
 
