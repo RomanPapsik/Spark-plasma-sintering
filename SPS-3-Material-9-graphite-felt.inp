@@ -1,0 +1,29 @@
+!===============================================================================
+! MATERIAL PROPERTIES
+!===============================================================================
+
+/PREP7
+
+MPTGEN,1,100,270,30
+
+!-------------------------------------------------------------------------------
+! GRAPHITE FELT (MERSEN)
+!-------------------------------------------------------------------------------
+
+! Assign unique number
+*SET,felt,9
+
+! Heat capacity [joule/(kilogram*kelvin)]
+MP,C,felt,506,696E-3
+
+! Thermal conductivity [watt/(meter*kelvin)]
+MP,KXX,felt,9.71187E-3,0,1.51166E-7
+
+! Electrical resistivity [ohm*meter]
+MP,RSVX,felt,1E-4
+
+! Density [kilogram/(meter**3)]
+MP,DENS,felt,75
+
+! Emisivity [-]
+MP,EMIS,felt,0.99

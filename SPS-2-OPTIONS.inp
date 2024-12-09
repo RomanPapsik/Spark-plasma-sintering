@@ -68,6 +68,7 @@ Al2O3 = 5
 TiC = 6
 SiC = 7
 TiAl = 8
+felt = 9
 
 ! Chosen option
 material_specimen = graphite
@@ -78,4 +79,4 @@ material_specimen = graphite
 
 add_graphite_paper = true
 add_cfc_foil = true
-add_wool = false
+add_felt = false
