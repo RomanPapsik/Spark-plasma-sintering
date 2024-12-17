@@ -61,7 +61,7 @@ NROPT,FULL
 ! TRANSIENT ANALYSIS WITH PRE-DEFINED LOAD
 !-------------------------------------------------------------------------------
 
-*IF,analysis_type,EQ,transient,AND,load_type,NE,temperature_controll,THEN
+*IF,analysis_type,EQ,transient,AND,load_type,NE,temperature_control,THEN
 
 	! Time stepping
 	*SET,time_step_initial,1*second
@@ -84,37 +84,60 @@ NROPT,FULL
 *ENDIF
 
 !-------------------------------------------------------------------------------
-! TRANSIENT ANALYSIS WITH AUTOMATIC CONTROLL
+! TRANSIENT ANALYSIS WITH AUTOMATIC CONTROL
 !-------------------------------------------------------------------------------
 
-*IF,analysis_type,EQ,transient,AND,load_type,EQ,temperature_controll,THEN
+*IF,analysis_type,EQ,transient,AND,load_type,EQ,temperature_control,THEN
 
 	! For restarts
-	RESCONTROL,DEFINE,LAST,LAST
+	RESCONTROL,DEFINE,NONE,NONE,1,,XNNN
 
-	*SET,dwell_start,(dwell_temperature-300)/heating_rate
-	*SET,dwell_end,dwell_start+dwell_time
-	
-	*SET,voltage_minimal,1*volt
-	*SET,voltage_maximal,5*volt
-	*SET,voltage_initial,voltage_minimal
+	! Available load range
+	*SET,voltage_minimal,0.1*volt
+	*SET,voltage_maximal,6.0*volt
+	*SET,voltage_initial,MIN(1,(heating_rate/(500*kelvin/minute)))*voltage_maximal
 
-	*SET,parameter_Kp,0.005
-	*SET,parameter_Ki,0
-	*SET,parameter_Kd,0
+	! Timing
+	*SET,heating_time,(dwell_temperature-initial_temperature)/heating_rate
+	*SET,dwell_time_start,heating_time
+	*SET,dwell_time_end,dwell_time_start+dwell_time
+
+	! PID controller
+	*SET,parameter_Ku,0.008
+	*SET,parameter_Tu,32
+	*SET,parameter_Kp,0.6*parameter_Ku
+	*SET,parameter_Ti,0.5*parameter_Tu
+	*SET,parameter_Td,0.125*parameter_Tu
+	*SET,parameter_Ki,1.2*parameter_Ku/parameter_Tu
+	*SET,parameter_Kd,0.075*parameter_Ku*parameter_Tu
+
+	! Loop initiation
+	*SET,time_increment,1*second
+	*SET,time_increments_count,dwell_time_end/time_increment
+	! Monitoring
+	*DIM,heating_monitor,TABLE,time_increments_count,9
+	! History variables
+	*SET,temperature_was,initial_temperature
+	*SET,error_was,0
 	*SET,controller_output,0
 
-	! Start with the heating
-	*SET,time_increment,1*second!dwell_start/10!1*minute
-	*SET,temperature_is,300*kelvin
-	*DIM,heating_monitor,TABLE,dwell_start/time_increment,6
-	*DO,time_new,time_increment,dwell_start,time_increment
+	! Loop
+	*DO,time_step,1,time_increments_count
 
-		! Calculate desired temperature
-		*SET,temperature_should,300+time_new*heating_rate
+		! Time at the end on new load step
+		*SET,time_new,time_step*time_increment
+
+		! Determine requested temperature
+		*IF,time_new,LT,dwell_time_start,THEN
+			! Heating phase
+			*SET,temperature_should,initial_temperature+(time_new*heating_rate)
+		*ELSE
+			! Dwell phase
+			*SET,temperature_should,dwell_temperature
+		*ENDIF
 
 		/SOLU
-		*IF,time_new,LE,time_increment,THEN
+		*IF,time_step,EQ,1,THEN
 			! New analysis in the first step
 			ANTYPE,TRANS,NEW
 
@@ -137,43 +160,58 @@ NROPT,FULL
 		CMSEL,S,surface_load,NODE
 		D,ALL,VOLT,voltage_new
 		NSEL,ALL
-		
+
 		! Solve
-		TIME,time_new
 		/UIS,MSGPOP,3
+		KEYW,PR_SGUI,1
+		TIME,time_new
 		SOLVE
+		KEYW,PR_SGUI,0
 		/UIS,MSGPOP,0
 
 		/POST1
-		! Store previous temperature
-		*SET,temperature_was,temperature_is
 		! Retrive new temperature
-		*GET,temperature_is,NODE,node(die_diameter/2,0,0),TEMP
+		*GET,temperature_is,NODE,node(die_diameter/2-probe_depth,0,0),TEMP
 		! Calculate actual heating rate
 		*SET,heating_rate_is,(temperature_is-temperature_was)/time_increment
 		! Check temperature error
-		*SET,temperature_error,temperature_should-temperature_is
-		! Adjust P controller output
-		*SET,controller_output,parameter_Kp*temperature_error
+		*SET,error_is,temperature_should-temperature_is
 
-		/COM,Time is %time_new% (stop at dwell start %dwell_start%)
-		/COM,Temperature should be %temperature_should% and is %temperature_is% (error %NINT(temperature_error)%)
-		/COM,Heating rate should be %heating_rate% and is %heating_rate_is%
+		*IF,time_step,EQ,1,THEN
+			! Cummulative error
+			*SET,cumulative_error,error_is*time_new
+			! Error change
+			*SET,error_change,error_is/time_increment
+		*ELSE
+			! Cummulative error
+			*SET,cumulative_error,cumulative_error+error_is
+			! Error change
+			*SET,error_change,(error_is-error_was)/time_increment
+		*ENDIF
 
-		*SET,heating_monitor(time_new/time_increment,0),time_new
-		*SET,heating_monitor(time_new/time_increment,1),temperature_should
-		*SET,heating_monitor(time_new/time_increment,2),temperature_is
-		*SET,heating_monitor(time_new/time_increment,3),temperature_error
-		*SET,heating_monitor(time_new/time_increment,4),heating_rate
-		*SET,heating_monitor(time_new/time_increment,5),heating_rate_is
-		*SET,heating_monitor(time_new/time_increment,6),controller_output
+		! Log
+		*SET,heating_monitor(time_step,0),time_new
+		*SET,heating_monitor(time_step,1),temperature_should
+		*SET,heating_monitor(time_step,2),temperature_is
+		*SET,heating_monitor(time_step,3),heating_rate
+		*SET,heating_monitor(time_step,4),heating_rate_is
+		*SET,heating_monitor(time_step,5),error_is
+		*SET,heating_monitor(time_step,6),error_change
+		*SET,heating_monitor(time_step,7),cumulative_error
+		*SET,heating_monitor(time_step,8),controller_output
+		*SET,heating_monitor(time_step,9),voltage_new
 
-		! *VLEN,time_new/time_increment
-		! *VPLOT,heating_monitor(1,0),heating_monitor(1,1),2,3
-		! *VPLOT,heating_monitor(1,0),heating_monitor(1,4),5
+		! Plot log
+		! *VLEN,time_step
+		! *VPLOT,heating_monitor(1,0),heating_monitor(1,1),2
+
+		! Adjust controller output
+		*SET,controller_output,parameter_Kp*error_is+parameter_Ki*cumulative_error+parameter_Kd*error_change
+
+		! Make current state obsolete
+		*SET,error_was,error_is
+		*SET,temperature_was,temperature_is
 	*ENDDO
-
-	! Continue with the dwell temperature
 *ENDIF
 
 !-------------------------------------------------------------------------------

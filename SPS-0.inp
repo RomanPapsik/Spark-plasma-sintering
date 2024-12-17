@@ -16,6 +16,7 @@
 /INPUT,SPS-3-Material-6-TiC,inp
 /INPUT,SPS-3-Material-7-SiC,inp
 /INPUT,SPS-3-Material-8-TiAl,inp
+/INPUT,SPS-3-Material-9-graphite-felt,inp
 
 *IF,machine_variant,EQ,Sinter_monoforce,THEN
 	/INPUT,SPS-4-Geometry-Sinter-1F,inp
@@ -43,4 +44,4 @@
 ! /INPUT,SPS-8-Results-2-paths,inp
 /INPUT,SPS-8-Results-3-history,inp
 
-! /INPUT,SPS-9-Export-data,inp
+/INPUT,SPS-9-Export-data,inp

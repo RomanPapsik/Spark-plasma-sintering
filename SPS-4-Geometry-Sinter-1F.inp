@@ -4,7 +4,7 @@
 ! DIMENSIONS OF SOLIDS
 !-------------------------------------------------------------------------------
 
-specimen_height = 6*millimeter
+! specimen_thickness = 3*millimeter
 specimen_diameter = 36*millimeter
 
 gap_thickness = 0.1*millimeter
@@ -37,9 +37,9 @@ chamber_width = 280*millimeter
 !-------------------------------------------------------------------------------
 
 height_0 = 0
-height_1 = specimen_height/2
+height_1 = specimen_thickness/2
 height_2 = die_height/2
-height_3 = specimen_height/2 + punch_height
+height_3 = specimen_thickness/2 + punch_height
 height_4 = height_3 + inner_spacer_height
 height_5 = height_4 + middle_spacer_height
 height_6 = height_5 + outer_spacer_height
@@ -60,15 +60,15 @@ AATT,material_specimen
 
 ! Punch
 ASEL,NONE
-RECTNG,0,specimen_diameter/2,specimen_height/2,die_height/2
-RECTNG,0,specimen_diameter/2,die_height/2,specimen_height/2 + punch_height
+RECTNG,0,specimen_diameter/2,specimen_thickness/2,die_height/2
+RECTNG,0,specimen_diameter/2,die_height/2,specimen_thickness/2 + punch_height
 ARSYM,Y,ALL,,,,1,0
 AATT,graphite
 
 ! Die
 ASEL,NONE
-RECTNG,specimen_diameter/2,die_diameter/2,0,specimen_height/2
-RECTNG,specimen_diameter/2,die_diameter/2,specimen_height/2,die_height/2
+RECTNG,specimen_diameter/2,die_diameter/2,0,specimen_thickness/2
+RECTNG,specimen_diameter/2,die_diameter/2,specimen_thickness/2,die_height/2
 ARSYM,Y,ALL,,,,1,0
 AATT,graphite
 

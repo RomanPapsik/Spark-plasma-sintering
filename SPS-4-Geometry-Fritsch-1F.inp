@@ -4,7 +4,7 @@
 ! DIMENSIONS OF SOLIDS
 !-------------------------------------------------------------------------------
 
-specimen_height = 6*millimeter
+specimen_thickness = 6*millimeter
 specimen_diameter = 20*millimeter
 
 punch_height = 37*millimeter
@@ -12,6 +12,7 @@ punch_diameter = 20*millimeter
 
 die_height = 50*millimeter
 die_diameter = 50*millimeter
+probe_depth = 15*millimeter
 
 electrode_height = 70*millimeter
 electrode_diameter = 100*millimeter
@@ -29,9 +30,9 @@ radius_5 = electrode_diameter/2
 radius_6 = holder_outer_diameter/2
 
 height_1 = 0
-height_2 = specimen_height/2
+height_2 = specimen_thickness/2
 height_3 = die_height/2
-height_4 = specimen_height/2 + punch_height
+height_4 = specimen_thickness/2 + punch_height
 height_5 = height_4 + electrode_height - holder_overhang
 height_6 = height_4 + electrode_height
 height_7 = height_5 + holder_height

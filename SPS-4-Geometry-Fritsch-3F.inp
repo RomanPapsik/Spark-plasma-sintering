@@ -4,11 +4,12 @@
 ! DIMENSIONS OF SOLIDS
 !-------------------------------------------------------------------------------
 
-specimen_height = 3*millimeter
+specimen_thickness = 3*millimeter
 specimen_diameter = 20*millimeter
 
 graphite_paper_thickness = 0.25*millimeter
 cfc_foil_thickness = 0.2*millimeter
+felt_thickness = 10*millimeter
 
 die_height = 60*millimeter
 die_bore = 20*millimeter
@@ -34,8 +35,10 @@ retainer_punch_depth = 15*millimeter
 retainer_punch_bore = 30*millimeter
 retainer_punch_diameter = 40*millimeter
 
-chamber_height = 250*millimeter
+chamber_height = 280*millimeter
 chamber_width = 280*millimeter
+
+probe_depth = 15*millimeter
 
 !-------------------------------------------------------------------------------
 ! POSITIONS
@@ -52,10 +55,10 @@ radius_7 = electrode_diameter/2
 radius_8 = retainer_electrode_diameter/2
 
 height_0 = 0
-height_1 = specimen_height/2
-height_2 = specimen_height/2 + graphite_paper_thickness
+height_1 = specimen_thickness/2
+height_2 = specimen_thickness/2 + graphite_paper_thickness
 height_3 = die_height/2
-height_4 = specimen_height/2 + graphite_paper_thickness + punch_inner_height
+height_4 = specimen_thickness/2 + graphite_paper_thickness + punch_inner_height
 height_5 = height_4 + punch_outer_height - retainer_punch_depth
 height_6 = height_4 + punch_outer_height
 height_7 = height_5 + retainer_punch_height
@@ -154,6 +157,41 @@ RECTNG,radius_6,radius_7,height_10,height_11
 RECTNG,radius_7,radius_8,height_10,height_11
 ARSYM,Y,ALL,,,,1,0
 AATT,inconel
+
+! Felt on the die
+*IF,add_felt_die,EQ,true,THEN
+	ASEL,NONE
+	RECTNG,radius_6,radius_6+felt_thickness,height_0,height_1
+	RECTNG,radius_6,radius_6+felt_thickness,height_1,height_2
+	RECTNG,radius_6,radius_6+felt_thickness,height_2,height_3
+	ARSYM,Y,ALL,,,,1,0
+	AATT,felt
+*ENDIF
+
+! Felt on the electrodes
+*IF,add_felt_electrode,EQ,true,THEN
+	ASEL,NONE
+	RECTNG,radius_7,radius_7+felt_thickness,height_3,height_9
+	ARSYM,Y,ALL,,,,1,0
+	AATT,felt
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! CHAMBER
+!-------------------------------------------------------------------------------
+
+K,9001,-chamber_width/2,-chamber_height/2
+K,9002,+chamber_width/2,-chamber_height/2
+K,9003,+chamber_width/2,+chamber_height/2
+K,9004,-chamber_width/2,+chamber_height/2
+L,9001,9002
+L,9002,9003
+L,9003,9004
+L,9004,9001
+
+!-------------------------------------------------------------------------------
+! FINALIZATION
+!-------------------------------------------------------------------------------
 
 ! Merge keypoints and areas
 ALLSEL,ALL

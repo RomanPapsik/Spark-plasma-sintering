@@ -1,18 +1,32 @@
+/COM,===========================================================================
+/COM,SETUP
+/COM,===========================================================================
+
 FINISH
-/CLEAR
+! Get information about batch/interactive mode
+*GET,is_interactive,ACTIVE,0,INT
+! Do only in interactive mode to prevent deleting command line arguments
+*IF,is_interactive,NE,0,THEN
+	! Clear everything
+	/CLEAR,NOSTART
+*ENDIF
+
+/COM,---------------------------------------------------------------------------
+/COM,CONSTANTS
+/COM,---------------------------------------------------------------------------
 
 ! Boolean data types
-true = 1
 false = 0
+true = 1
 
 ! Define the number pi
 PI = 3.141592653589793
 
 ! Meshing methods
-mapped_mesh = 1
 free_mesh = 0
+mapped_mesh = 1
 
-! Meshing methods
+! Element shape
 tetrahedral_mesh = 1
 hexahedral_mesh = 0
 
@@ -20,8 +34,11 @@ hexahedral_mesh = 0
 ! VISUALISATION
 !-------------------------------------------------------------------------------
 
+! Coordinate system triad
 /TRIAD,OFF
+! Minimum and maximum
 /PLOPTS,MINM,OFF
+! Date and time
 /PLOPTS,DATE,OFF
 
 !-------------------------------------------------------------------------------
@@ -37,10 +54,22 @@ kelvin = 1
 millisecond = second/1000
 minute = second*60
 millimeter = meter/1000
-joule = kilogram*meter**2/second**2
+joule = (kilogram*(meter**2))/(second**2)
 watt = joule/second
 volt = watt/ampere
 ohm = volt/ampere
+
+/COM,---------------------------------------------------------------------------
+/COM,COMMAND LINE VARIABLES
+/COM,---------------------------------------------------------------------------
+
+! Possible status of a variable
+*SET,defined,0
+*SET,undefined,-1
+
+! Check command line
+*GET,status_material_specimen,PARM,material_specimen,TYPE
+*GET,status_heating_rate,PARM,heating_rate,TYPE
 
 !-------------------------------------------------------------------------------
 ! SHORTCUTS

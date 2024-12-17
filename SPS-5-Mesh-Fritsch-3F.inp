@@ -15,7 +15,8 @@ KEYOPT,thermoelectric_element,1,110
 ! Sizing
 element_size = 1*millimeter
 LSEL,ALL
-LESIZE,ALL,element_size,,,,1
+LESIZE,ALL,element_size,,,,1,,,0
+LESIZE,ALL,,,4,,2,,,0
 
 ! Meshing
 TYPE,thermoelectric_element
@@ -29,10 +30,6 @@ NUMMRG,ALL,0.001*micrometer
 ! Numbering
 /PNUM,MAT,1
 /NUMBER,1
-
-! Symmetry expansion
-! /EXPAND,1,RECT,HALF,1E-12
-! EPLOT
 
 !-------------------------------------------------------------------------------
 ! COMPONENTS

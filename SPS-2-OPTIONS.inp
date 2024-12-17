@@ -11,6 +11,39 @@ Fritsch_triforce  = 3 ! Dr. Fritsch LSP 100 Friforce
 machine_variant = Fritsch_triforce
 
 !-------------------------------------------------------------------------------
+! SPECIMEN
+!-------------------------------------------------------------------------------
+
+! Available materials
+graphite = 1
+Al2O3 = 5
+TiC = 6
+SiC = 7
+TiAl = 8
+
+! Chosen option
+*IF,status_material_specimen,EQ,undefined,THEN
+material_specimen = TiAl
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! ADITIONAL RESISTANCE
+!-------------------------------------------------------------------------------
+
+! Optional cooling if transient
+simulate_cooling = false
+
+! Electrical resistivity between punch and die
+add_graphite_paper = true
+
+! Thermal resistivity between electrode and retainer
+add_cfc_foil = true
+
+! Thermal insulation of die and electrode
+add_felt_die = false
+add_felt_electrode = false
+
+!-------------------------------------------------------------------------------
 ! ANALYSIS TYPE
 !-------------------------------------------------------------------------------
 
@@ -21,11 +54,6 @@ transient    = 2
 ! Chosen option
 analysis_type = transient
 
-*IF,analysis_type,EQ,transient,THEN
-	! Optional cooling
-	simulate_cooling = false
-*ENDIF
-
 !-------------------------------------------------------------------------------
 ! LOAD CHANGE
 !-------------------------------------------------------------------------------
@@ -35,48 +63,30 @@ constant_voltage = 1
 constant_current = 2
 variable_voltage = 3
 variable_current = 4
-temperature_controll = 5
+temperature_control = 5
 
 ! Chosen option
-load_type = temperature_controll
+load_type = temperature_control
 
 *IF,load_type,EQ,constant_voltage,THEN
+
 	! Load magnitude and duration
-	load_magnitude = 3.7*volt
-	heating_time = 30*minute
+	load_magnitude = 0.5*volt
+	heating_time = 1*minute
+
 *ELSEIF,load_type,EQ,constant_current,THEN
+
 	! Load magnitude and duration
-	load_magnitude = 5000*ampere
+	load_magnitude = 4000*ampere
 	heating_time = 30*minute
-*ELSEIF,load_type,EQ,temperature_controll,THEN
-	! Requested dwell temperature, time and heating rate
-	dwell_temperature = 1800*kelvin
-	dwell_time = 15*minute
+
+*ELSEIF,load_type,EQ,temperature_control,THEN
+
+	! Requested heating rate, dwell temperature and dwell time
+	*IF,status_heating_rate,EQ,undefined,THEN
 	heating_rate = 100*kelvin/minute
+	*ENDIF
+	dwell_temperature = (1500+273)*kelvin
+	dwell_time = 15*minute
+
 *ENDIF
-
-!-------------------------------------------------------------------------------
-! MATERIALS
-!-------------------------------------------------------------------------------
-
-! Available materials
-graphite = 1
-graphite_paper = 2
-cfc_foil = 3
-inconel = 4
-Al2O3 = 5
-TiC = 6
-SiC = 7
-TiAl = 8
-felt = 9
-
-! Chosen option
-material_specimen = graphite
-
-!-------------------------------------------------------------------------------
-! CONTACT RESISTANCE
-!-------------------------------------------------------------------------------
-
-add_graphite_paper = true
-add_cfc_foil = true
-add_felt = false

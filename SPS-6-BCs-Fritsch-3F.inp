@@ -1,11 +1,18 @@
 /PREP7
 
 !-------------------------------------------------------------------------------
+! INITIAL TEMPERATURE
+!-------------------------------------------------------------------------------
+
+initial_temperature = (20+273)*kelvin
+TUNIF,initial_temperature
+
+!-------------------------------------------------------------------------------
 ! CONVECTIVE COOLING
 !-------------------------------------------------------------------------------
 
 ! Water temperature
-water_temperature = 300*kelvin
+water_temperature = (20+273)*kelvin
 
 ! Heat convection coefficient
 heat_convection_coefficient = 880*watt/(kelvin*meter**2)
@@ -39,7 +46,6 @@ distant_node = node(chamber_width/2,0,0)
 
 ! BCs for distant node
 D,distant_node,TEMP,water_temperature
-TUNIF,water_temperature
 
 ! Create radiation elements
 NSEL,S,NODE,,distant_node
