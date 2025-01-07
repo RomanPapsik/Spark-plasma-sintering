@@ -19,29 +19,30 @@
 /INPUT,SPS-3-Material-9-graphite-felt,inp
 
 *IF,machine_variant,EQ,Sinter_monoforce,THEN
-	/INPUT,SPS-4-Geometry-Sinter-1F,inp
-	/INPUT,SPS-5-Mesh-Sinter-1F,inp
-	/INPUT,SPS-6-BCs-Sinter-1F,inp
+	/INPUT,SPS-4-Geometry-Sinter,inp
+	/INPUT,SPS-5-Mesh-Sinter,inp
+	/INPUT,SPS-6-BCs-Sinter,inp
 *ENDIF
 
 *IF,machine_variant,EQ,Fritsch_monoforce,THEN
-! 	/INPUT,SPS-4-Geometry-Basic,inp
-! 	/INPUT,SPS-5-Mesh-Basic,inp
-! 	/INPUT,SPS-6-BCs-Basic,inp
-! 	/INPUT,SPS-7-Solution,inp
-! 	/INPUT,SPS-8-Results-Basic,inp
+	/INPUT,SPS-4-Geometry-Fritsch-1F,inp
+	/INPUT,SPS-5-Mesh-Fritsch-1F,inp
+	/INPUT,SPS-6-BCs-Fritsch,inp
 *ENDIF
 
 *IF,machine_variant,EQ,Fritsch_triforce,THEN
 	/INPUT,SPS-4-Geometry-Fritsch-3F,inp
 	/INPUT,SPS-5-Mesh-Fritsch-3F,inp
-	/INPUT,SPS-6-BCs-Fritsch-3F,inp
+	/INPUT,SPS-6-BCs-Fritsch,inp
 *ENDIF
 
+! Solution
 /INPUT,SPS-7-Solution,inp
 
-! /INPUT,SPS-8-Results-1-fields,inp
+! Results
+/INPUT,SPS-8-Results-1-fields,inp
 ! /INPUT,SPS-8-Results-2-paths,inp
 /INPUT,SPS-8-Results-3-history,inp
 
+! Export
 /INPUT,SPS-9-Export-data,inp

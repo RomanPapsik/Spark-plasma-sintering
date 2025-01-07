@@ -8,7 +8,11 @@ Fritsch_monoforce = 2 ! Dr. Fritsch LSP 100 Basic
 Fritsch_triforce  = 3 ! Dr. Fritsch LSP 100 Friforce
 
 ! Chosen option
-machine_variant = Fritsch_triforce
+*IF,status_machine_variant,EQ,undefined,THEN
+	machine_variant = Fritsch_monoforce
+*ELSE
+	machine_variant = confid
+*ENDIF
 
 !-------------------------------------------------------------------------------
 ! SPECIMEN
@@ -23,7 +27,9 @@ TiAl = 8
 
 ! Chosen option
 *IF,status_material_specimen,EQ,undefined,THEN
-material_specimen = TiAl
+	material_specimen = Al2O3
+*ELSE
+	material_specimen = matid
 *ENDIF
 
 !-------------------------------------------------------------------------------
@@ -77,16 +83,22 @@ load_type = temperature_control
 *ELSEIF,load_type,EQ,constant_current,THEN
 
 	! Load magnitude and duration
-	load_magnitude = 4000*ampere
-	heating_time = 30*minute
+	*IF,status_load_magnitude,EQ,undefined,THEN
+		load_magnitude = 5000*ampere
+	*ELSE
+		load_magnitude = load_magnitude*ampere
+	*ENDIF
+	heating_time = 60*minute
 
 *ELSEIF,load_type,EQ,temperature_control,THEN
 
 	! Requested heating rate, dwell temperature and dwell time
 	*IF,status_heating_rate,EQ,undefined,THEN
-	heating_rate = 100*kelvin/minute
+		heating_rate = 200*kelvin/minute
+	*ELSE
+		heating_rate = hrate*kelvin/minute
 	*ENDIF
 	dwell_temperature = (1500+273)*kelvin
-	dwell_time = 15*minute
+	dwell_time = 10*minute
 
 *ENDIF
