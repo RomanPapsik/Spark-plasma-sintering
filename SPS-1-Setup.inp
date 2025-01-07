@@ -68,8 +68,11 @@ ohm = volt/ampere
 *SET,undefined,-1
 
 ! Check command line
-*GET,status_material_specimen,PARM,material_specimen,TYPE
-*GET,status_heating_rate,PARM,heating_rate,TYPE
+*GET,status_machine_variant,PARM,confid,TYPE
+*GET,status_material_specimen,PARM,matid,TYPE
+*GET,status_heating_rate,PARM,hrate,TYPE
+*GET,status_thickness_specimen,PARM,thick,TYPE
+*GET,status_load_magnitude,PARM,load_magnitude,TYPE
 
 !-------------------------------------------------------------------------------
 ! SHORTCUTS
