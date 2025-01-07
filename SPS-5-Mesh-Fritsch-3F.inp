@@ -25,7 +25,7 @@ MSHKEY,mapped_mesh
 AMESH,ALL
 
 ! Merge everything
-NUMMRG,ALL,0.001*micrometer
+NUMMRG,ALL,0.001*millimeter
 
 ! Numbering
 /PNUM,MAT,1
@@ -35,26 +35,17 @@ NUMMRG,ALL,0.001*micrometer
 ! COMPONENTS
 !-------------------------------------------------------------------------------
 
+SELTOL,0.001*millimeter
+
 ! Water-cooled surface
-KSEL,S,LOC,Y,-height_11,-height_11
-KSEL,A,LOC,Y,+height_11,+height_11
+KSEL,S,LOC,Y,-height_load,-height_load
+KSEL,A,LOC,Y,+height_load,+height_load
 KSEL,R,LOC,X,radius_5,radius_8
 KSEL,A,LOC,Y,-height_7,-height_7
 KSEL,A,LOC,Y,+height_7,+height_7
 LSLK,S,1
 NSLL,S,1
 CM,surface_water,NODE
-ALLSEL,ALL
-
-! Surface for vacuum convection
-KSEL,S,LOC,X,radius_8,radius_8
-KSEL,A,LOC,Y,-height_9,height_9
-KSEL,R,LOC,X,radius_7,radius_8
-KSEL,A,LOC,Y,-height_3,height_3
-KSEL,R,LOC,X,radius_6,radius_8
-LSLK,S,1
-NSLL,S,1
-CM,surface_vacuum,NODE
 ALLSEL,ALL
 
 ! Surface for radiation
@@ -72,7 +63,7 @@ ALLSEL,ALL
 
 ! Ground side
 KSEL,S,LOC,X,retainer_electrode_bore/2,retainer_electrode_diameter/2
-KSEL,R,LOC,Y,-height_11,-height_11
+KSEL,R,LOC,Y,-height_load,-height_load
 LSLK,S,1
 NSLL,S,1
 CM,surface_ground,NODE
@@ -80,7 +71,7 @@ ALLSEL,ALL
 
 ! Load side
 KSEL,S,LOC,X,retainer_electrode_bore/2,retainer_electrode_diameter/2
-KSEL,R,LOC,Y,+height_11,+height_11
+KSEL,R,LOC,Y,+height_load,+height_load
 LSLK,S,1
 NSLL,S,1
 CM,surface_load,NODE

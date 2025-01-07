@@ -4,7 +4,11 @@
 ! DIMENSIONS OF SOLIDS
 !-------------------------------------------------------------------------------
 
-specimen_thickness = 3*millimeter
+*IF,status_thickness_specimen,EQ,undefined,THEN
+	specimen_thickness = 3*millimeter
+*ELSE
+	specimen_thickness = thick*millimeter
+*ENDIF
 specimen_diameter = 20*millimeter
 
 graphite_paper_thickness = 0.25*millimeter
@@ -12,15 +16,15 @@ cfc_foil_thickness = 0.2*millimeter
 felt_thickness = 10*millimeter
 
 die_height = 60*millimeter
+die_diameter = 60*millimeter
 die_bore = 20*millimeter
-die_diameter = 60*millimeter ! 25 cm2 cross-section
 
 electrode_height = 70*millimeter
+electrode_diameter = 100*millimeter
 electrode_bore = 44*millimeter
-electrode_diameter = 100*millimeter ! 63 cm2 cross-section
 
 punch_inner_height = 37*millimeter
-punch_inner_diameter = 20*millimeter ! 19.5 really
+punch_inner_diameter = 20*millimeter
 
 punch_outer_height = 65*millimeter
 punch_outer_diameter = 30*millimeter
@@ -79,7 +83,7 @@ RECTNG,radius_0,radius_1,height_0,height_1
 ARSYM,Y,ALL,,,,1,0
 AATT,material_specimen
 
-! Graphite foild between specimen, dies and punches
+! Graphite foil between specimen, dies and punches
 ASEL,NONE
 RECTNG,radius_0,radius_1,height_1,height_2
 RECTNG,radius_1,radius_2,height_0,height_1

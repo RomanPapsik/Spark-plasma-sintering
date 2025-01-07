@@ -4,88 +4,166 @@
 ! DIMENSIONS OF SOLIDS
 !-------------------------------------------------------------------------------
 
-specimen_thickness = 6*millimeter
+*IF,status_thickness_specimen,EQ,undefined,THEN
+	specimen_thickness = 3*millimeter
+*ELSE
+	specimen_thickness = thick*millimeter
+*ENDIF
 specimen_diameter = 20*millimeter
+
+graphite_paper_thickness = 0.25*millimeter
+cfc_foil_thickness = 0.2*millimeter
+felt_thickness = 10*millimeter
+
+die_height = 50*millimeter
+die_diameter = 50*millimeter
+die_bore = 20*millimeter
+
+electrode_height = 70*millimeter
+electrode_diameter = 100*millimeter
+electrode_bore = 0*millimeter
 
 punch_height = 37*millimeter
 punch_diameter = 20*millimeter
 
-die_height = 50*millimeter
-die_diameter = 50*millimeter
-probe_depth = 15*millimeter
+retainer_electrode_height = 25*millimeter
+retainer_electrode_depth = 15*millimeter
+retainer_electrode_bore = 44*millimeter
+retainer_electrode_diameter = 110*millimeter
 
-electrode_height = 70*millimeter
-electrode_diameter = 100*millimeter
+chamber_height = 280*millimeter
+chamber_width = 280*millimeter
 
-holder_height = 20*millimeter
-holder_inner_diameter = 43.5*millimeter
-holder_outer_diameter = 110*millimeter
-holder_overhang = 5*millimeter
+probe_depth = 10*millimeter
 
-radius_1 = 0
-radius_2 = specimen_diameter/2
-radius_3 = holder_inner_diameter/2
-radius_4 = die_diameter/2
+!-------------------------------------------------------------------------------
+! POSITIONS
+!-------------------------------------------------------------------------------
+
+radius_0 = 0
+radius_1 = specimen_diameter/2
+radius_2 = specimen_diameter/2 + graphite_paper_thickness
+radius_3 = die_diameter/2
+radius_4 = retainer_electrode_bore/2
 radius_5 = electrode_diameter/2
-radius_6 = holder_outer_diameter/2
+radius_6 = retainer_electrode_diameter/2
 
-height_1 = 0
-height_2 = specimen_thickness/2
+height_0 = 0
+height_1 = specimen_thickness/2
+height_2 = specimen_thickness/2 + graphite_paper_thickness
 height_3 = die_height/2
-height_4 = specimen_thickness/2 + punch_height
-height_5 = height_4 + electrode_height - holder_overhang
+height_4 = specimen_thickness/2 + graphite_paper_thickness + punch_height
+height_5 = height_4 + electrode_height + cfc_foil_thickness - retainer_electrode_depth
 height_6 = height_4 + electrode_height
-height_7 = height_5 + holder_height
+height_7 = height_4 + electrode_height + cfc_foil_thickness
+height_8 = height_5 + retainer_electrode_height
+
+height_load = height_8
 
 !-------------------------------------------------------------------------------
-! GEOMETRY OF SOLIDS
+! AREAS
 !-------------------------------------------------------------------------------
 
-/PREP7
-
-*DO,r,1,6
-	K,r*100+10+0,radius_%r%,height_1
-	*DO,h,2,7
-		K,r*100+h*10+1,radius_%r%,+height_%h%
-		K,r*100+h*10+2,radius_%r%,-height_%h%
-	*ENDDO
-*ENDDO
-
+! Specimen
 ASEL,NONE
-A,110,210,221,121
-A,110,210,222,122
-AATT,TiC
+RECTNG,0,specimen_diameter/2,0,specimen_thickness/2
+ARSYM,Y,ALL,,,,1,0
+AATT,material_specimen
 
+! Graphite foil between specimen, dies and punches
 ASEL,NONE
-A,210,410,421,221
-A,210,410,422,222
-A,121,221,231,131
-A,122,222,232,132
-A,221,421,431,231
-A,222,422,432,232
-A,131,231,241,141
-A,132,232,242,142
-A,141,241,251,151
-A,142,242,252,152
-A,241,341,351,251
-A,242,342,352,252
-A,341,541,551,351
-A,342,542,552,352
-A,151,251,261,161
-A,251,351,361,261
-A,351,551,561,361
-A,152,252,262,162
-A,252,352,362,262
-A,352,552,562,362
+RECTNG,0,specimen_diameter/2,height_1,height_2
+RECTNG,specimen_diameter/2,radius_2,height_0,height_1
+RECTNG,specimen_diameter/2,radius_2,height_1,height_2
+RECTNG,specimen_diameter/2,radius_2,height_2,height_3
+ARSYM,Y,ALL,,,,1,0
+*IF,add_graphite_paper,EQ,true,THEN
+	AATT,graphite_paper
+*ELSE
+	AATT,graphite
+*ENDIF
+
+! Die
+ASEL,NONE
+RECTNG,radius_2,die_diameter/2,height_0,height_1
+RECTNG,radius_2,die_diameter/2,height_1,height_2
+RECTNG,radius_2,die_diameter/2,height_2,height_3
+ARSYM,Y,ALL,,,,1,0
 AATT,graphite
 
+! Punch
 ASEL,NONE
-A,551,651,661,561
-A,552,652,662,562
-A,361,561,571,371
-A,561,661,671,571
-A,362,562,572,372
-A,562,662,672,572
+RECTNG,radius_0,radius_1,height_2,height_3
+RECTNG,radius_0,radius_1,height_3,height_4
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite
+
+! Electrode
+ASEL,NONE
+RECTNG,                        0,         punch_diameter/2,height_4,height_5
+RECTNG,         punch_diameter/2,retainer_electrode_bore/2,height_4,height_5
+RECTNG,retainer_electrode_bore/2,     electrode_diameter/2,height_4,height_5
+RECTNG,                        0,         punch_diameter/2,height_5,height_6
+RECTNG,         punch_diameter/2,retainer_electrode_bore/2,height_5,height_6
+RECTNG,retainer_electrode_bore/2,     electrode_diameter/2,height_5,height_6
+ARSYM,Y,ALL,,,,1,0
+AATT,graphite
+
+! CFC foil
+ASEL,NONE
+RECTNG,retainer_electrode_bore/2,electrode_diameter/2,height_6,height_7
+ARSYM,Y,ALL,,,,1,0
+*IF,add_cfc_foil,EQ,true,THEN
+	AATT,cfc_foil
+*ELSE
+	AATT,inconel
+*ENDIF
+
+! Retainer of electrode
+ASEL,NONE
+RECTNG,retainer_electrode_bore/2,electrode_diameter/2,height_7,height_8
+RECTNG,electrode_diameter/2,retainer_electrode_diameter/2,height_7,height_8
+RECTNG,electrode_diameter/2,retainer_electrode_diameter/2,height_6,height_7
+RECTNG,electrode_diameter/2,retainer_electrode_diameter/2,height_5,height_6
+ARSYM,Y,ALL,,,,1,0
 AATT,inconel
 
-ASEL,ALL
+! Felt on the die
+*IF,add_felt_die,EQ,true,THEN
+	ASEL,NONE
+	RECTNG,die_diameter/2,die_diameter/2+felt_thickness,height_0,height_1
+	RECTNG,die_diameter/2,die_diameter/2+felt_thickness,height_1,height_2
+	RECTNG,die_diameter/2,die_diameter/2+felt_thickness,height_2,height_3
+	ARSYM,Y,ALL,,,,1,0
+	AATT,felt
+*ENDIF
+
+! Felt on the electrodes
+*IF,add_felt_electrode,EQ,true,THEN
+	ASEL,NONE
+	RECTNG,retainer_electrode_diameter/2,retainer_electrode_diameter/2+felt_thickness,height_4,height_5
+	ARSYM,Y,ALL,,,,1,0
+	AATT,felt
+*ENDIF
+
+!-------------------------------------------------------------------------------
+! CHAMBER
+!-------------------------------------------------------------------------------
+
+K,9001,-chamber_width/2,-chamber_height/2
+K,9002,+chamber_width/2,-chamber_height/2
+K,9003,+chamber_width/2,+chamber_height/2
+K,9004,-chamber_width/2,+chamber_height/2
+L,9001,9002
+L,9002,9003
+L,9003,9004
+L,9004,9001
+
+!-------------------------------------------------------------------------------
+! FINALIZATION
+!-------------------------------------------------------------------------------
+
+! Merge keypoints and areas
+ALLSEL,ALL
+NUMMRG,KP,0.001*millimeter
+APLOT

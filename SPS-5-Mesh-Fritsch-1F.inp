@@ -15,7 +15,8 @@ KEYOPT,thermoelectric_element,1,110
 ! Sizing
 element_size = 1*millimeter
 LSEL,ALL
-LESIZE,ALL,element_size,,,,1
+LESIZE,ALL,element_size,,,,1,,,0
+LESIZE,ALL,,,4,,2,,,0
 
 ! Meshing
 TYPE,thermoelectric_element
@@ -24,12 +25,55 @@ MSHKEY,mapped_mesh
 AMESH,ALL
 
 ! Merge everything
-NUMMRG,ALL,0.001*micrometer
+NUMMRG,ALL,0.001*millimeter
 
 ! Numbering
 /PNUM,MAT,1
 /NUMBER,1
 
-! Symmetry expansion
-/EXPAND,1,RECT,HALF,1E-12
-EPLOT
+!-------------------------------------------------------------------------------
+! COMPONENTS
+!-------------------------------------------------------------------------------
+
+SELTOL,0.001*millimeter
+
+! Water-cooled surface
+KSEL,S,LOC,Y,-height_load,-height_load
+KSEL,A,LOC,Y,+height_load,+height_load
+LSLK,S,1
+NSLL,S,1
+CM,surface_water,NODE
+ALLSEL,ALL
+
+! Surface for radiation
+KSEL,S,LOC,X,die_diameter/2,die_diameter/2
+KSEL,R,LOC,Y,-height_3,height_3
+LSLK,S,1
+KSEL,S,LOC,Y,-height_3,-height_4
+KSEL,A,LOC,Y,+height_3,+height_4
+KSEL,R,LOC,X,punch_diameter/2,punch_diameter/2
+LSLK,A,1
+KSEL,S,LOC,X,electrode_diameter/2,electrode_diameter/2
+KSEL,R,LOC,Y,-height_5,+height_5
+LSLK,A,1
+KSEL,S,LOC,X,retainer_electrode_diameter/2,retainer_electrode_diameter/2
+LSLK,A,1
+NSLL,S,1
+CM,surface_radiation,NODE
+ALLSEL,ALL
+
+! Ground side
+KSEL,S,LOC,X,retainer_electrode_bore/2,retainer_electrode_diameter/2
+KSEL,R,LOC,Y,-height_load,-height_load
+LSLK,S,1
+NSLL,S,1
+CM,surface_ground,NODE
+ALLSEL,ALL
+
+! Load side
+KSEL,S,LOC,X,retainer_electrode_bore/2,retainer_electrode_diameter/2
+KSEL,R,LOC,Y,+height_load,+height_load
+LSLK,S,1
+NSLL,S,1
+CM,surface_load,NODE
+ALLSEL,ALL

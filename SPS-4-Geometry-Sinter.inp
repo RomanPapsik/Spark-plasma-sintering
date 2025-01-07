@@ -4,7 +4,7 @@
 ! DIMENSIONS OF SOLIDS
 !-------------------------------------------------------------------------------
 
-! specimen_thickness = 3*millimeter
+specimen_thickness = 3*millimeter
 specimen_diameter = 36*millimeter
 
 gap_thickness = 0.1*millimeter

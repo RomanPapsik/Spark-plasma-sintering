@@ -24,7 +24,7 @@ MSHKEY,mapped_mesh
 AMESH,ALL
 
 ! Merge everything
-NUMMRG,ALL,0.001*micrometer
+NUMMRG,ALL,0.001*millimeter
 
 ! Numbering
 /PNUM,MAT,1
