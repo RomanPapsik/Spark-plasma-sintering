@@ -122,7 +122,11 @@ NROPT,FULL
 	*ENDIF
 
 	! Loop initiation
-	*SET,time_increment,1*second
+	*IF,heating_rate,GT,(500*kelvin/minute),THEN
+		*SET,time_increment,1*second
+	*ELSE
+		*SET,time_increment,0.1*second
+	*ENDIF
 	*SET,time_increments_count,dwell_time_end/time_increment
 	! Monitoring
 	*DIM,heating_monitor,TABLE,time_increments_count,9

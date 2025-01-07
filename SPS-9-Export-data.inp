@@ -16,7 +16,11 @@ day = NINT(date_ymd - year*1E4 - month*1E2)
 *SET,file_conf,'conf-%CHRVAL(machine_variant)%'
 *SET,file_mat,'mat-%CHRVAL(material_specimen)%'
 *SET,file_thic,'thic-%CHRVAL(specimen_thickness)%'
-*SET,file_heat,'time-%CHRVAL(heating_time)%'
+*IF,load_type,EQ,temperature_control,THEN
+	*SET,file_heat,'dwell-%CHRVAL(dwell_time)%'
+*ELSE
+	*SET,file_heat,'time-%CHRVAL(heating_time)%'
+*ENDIF
 *SET,file_cool,'cool-%CHRVAL(simulate_cooling)%'
 *IF,analysis_type,EQ,steady_state,THEN
 	*SET,file_anal,'steady%'
@@ -29,7 +33,8 @@ day = NINT(date_ymd - year*1E4 - month*1E2)
 *ELSEIF,load_type,EQ,constant_current,THEN
 	*SET,file_load,'curr-%CHRVAL(load_magnitude/1e3)%'
 *ELSEIF,load_type,EQ,temperature_control,THEN
-	*SET,file_load,'rate-%CHRVAL(heating_rate*60)%-Ku-%CHRVAL(parameter_Ku)%-Kp-%CHRVAL(parameter_Kp)%-Kd-%CHRVAL(parameter_Kd)%'
+	! *SET,file_load,'rate-%CHRVAL(heating_rate*60)%-Ku-%CHRVAL(parameter_Ku)%-Kp-%CHRVAL(parameter_Kp)%-Kd-%CHRVAL(parameter_Kd)%'
+	*SET,file_load,'rate-%CHRVAL(heating_rate*60)%'
 *ENDIF
 
 ! Create a file name

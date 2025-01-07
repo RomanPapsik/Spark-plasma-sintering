@@ -99,6 +99,6 @@ load_type = temperature_control
 		heating_rate = hrate*kelvin/minute
 	*ENDIF
 	dwell_temperature = (1500+273)*kelvin
-	dwell_time = 10*minute
+	dwell_time = 15*minute
 
 *ENDIF
