@@ -93,8 +93,8 @@ NROPT,FULL
 	RESCONTROL,DEFINE,NONE,NONE,1,,XNNN
 
 	! Available load range
-	*SET,voltage_minimal,0.1*volt
-	*SET,voltage_maximal,6.0*volt
+	*SET,voltage_minimal,0.5*volt
+	*SET,voltage_maximal,5.5*volt
 	*SET,voltage_initial,MIN(1,(heating_rate/(500*kelvin/minute)))*voltage_maximal
 
 	! Timing
@@ -103,13 +103,23 @@ NROPT,FULL
 	*SET,dwell_time_end,dwell_time_start+dwell_time
 
 	! PID controller
-	*SET,parameter_Ku,0.008
-	*SET,parameter_Tu,32
-	*SET,parameter_Kp,0.6*parameter_Ku
-	*SET,parameter_Ti,0.5*parameter_Tu
-	*SET,parameter_Td,0.125*parameter_Tu
-	*SET,parameter_Ki,1.2*parameter_Ku/parameter_Tu
-	*SET,parameter_Kd,0.075*parameter_Ku*parameter_Tu
+	*IF,machine_variant,EQ,Fritsch_monoforce,THEN
+		*SET,parameter_Ku,0.010
+		*SET,parameter_Tu,49
+		*SET,parameter_Kp,0.6*parameter_Ku
+		*SET,parameter_Ti,0.5*parameter_Tu
+		*SET,parameter_Td,0.125*parameter_Tu
+		*SET,parameter_Ki,1.2*parameter_Ku/parameter_Tu
+		*SET,parameter_Kd,4*0.075*parameter_Ku*parameter_Tu
+	*ELSEIF,machine_variant,EQ,Fritsch_triforce,THEN
+		*SET,parameter_Ku,0.008
+		*SET,parameter_Tu,32
+		*SET,parameter_Kp,0.6*parameter_Ku
+		*SET,parameter_Ti,0.5*parameter_Tu
+		*SET,parameter_Td,0.125*parameter_Tu
+		*SET,parameter_Ki,1.2*parameter_Ku/parameter_Tu
+		*SET,parameter_Kd,0.075*parameter_Ku*parameter_Tu
+	*ENDIF
 
 	! Loop initiation
 	*SET,time_increment,1*second

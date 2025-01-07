@@ -29,7 +29,7 @@ day = NINT(date_ymd - year*1E4 - month*1E2)
 *ELSEIF,load_type,EQ,constant_current,THEN
 	*SET,file_load,'curr-%CHRVAL(load_magnitude/1e3)%'
 *ELSEIF,load_type,EQ,temperature_control,THEN
-	*SET,file_load,'rate-%CHRVAL(heating_rate*60)%'
+	*SET,file_load,'rate-%CHRVAL(heating_rate*60)%-Ku-%CHRVAL(parameter_Ku)%-Kp-%CHRVAL(parameter_Kp)%-Kd-%CHRVAL(parameter_Kd)%'
 *ENDIF
 
 ! Create a file name
@@ -165,8 +165,8 @@ day = NINT(date_ymd - year*1E4 - month*1E2)
 *IF,analysis_type,EQ,transient,AND,load_type,EQ,temperature_control,THEN
 
 ! PID control
-*VWRITE,
-<PID>
+*VWRITE,parameter_Kp,parameter_Ki,parameter_Kd,time_increment
+<PID Kp="%08.6f" Ki="%08.6f" Kd="%08.6f" dt="%08.6f">
 *VWRITE,heating_monitor(1,0),heating_monitor(1,1),heating_monitor(1,2),heating_monitor(1,3),heating_monitor(1,4),heating_monitor(1,5),heating_monitor(1,6),heating_monitor(1,7),heating_monitor(1,8),heating_monitor(1,9)
 <point t="%08.3f" T_should="%6.1F" T_is="%6.1F" dTdt_should="%8.3f" dTdt_is="%8.3f" err="%8.3f" derrdt="%8.3f" err_cum="%8.3f" PID_out="%8.3f" V="%8.3f" />
 *VWRITE,
